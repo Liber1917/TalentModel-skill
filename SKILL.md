@@ -109,6 +109,15 @@ metadata:
   - 面试评分表 — 面试问题与评分标准
 ```
 
+#### Q8.5: 图表渲染方式 【仅当选择HTML时】
+```
+选项：
+  - 完全离线 — 使用内嵌的 echarts.min.js，无需网络（推荐）
+  - 外部CDN — 使用 CDN 加载 ECharts，报告更轻量但需要网络
+
+提示：完全离线版可分享给无网络环境的同事；CDN 版文件更小、图表版本更新。
+```
+
 #### Q9: 语言
 ```
 选项：中文 / English
@@ -137,12 +146,16 @@ metadata:
 地区：中国+全球
 验证公司：Google, Microsoft, ByteDance, Alibaba, Tencent...
 输出：HTML报告
+图表渲染：完全离线（内嵌echarts.min.js）
 语言：中文
 
 【智能校验】
 ✓ 校招级别已选择，将侧重潜力与基础素质
 ✓ 验证公司包含多家校招入口，适合交叉检验
 ⚠ 提醒：输出将避免技能清单陷阱，聚焦人才画像
+
+【可选功能】
+□ 添加自测矩阵（三水位：起步/达标/突出）— 适用于候选人有自测需求的场景
 
 请确认或修改：
 [确认] [修改配置]
@@ -295,17 +308,207 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
     <!-- 建模口径说明 -->
     <div class="model-note">...</div>
     
+    <!-- 00 批判性分析：MECE建模思路扬弃 -->
+    <section>
+      <div class="section-header">
+        <span class="section-num">00</span>
+        <span class="section-title">批判性分析：MECE建模思路扬弃</span>
+      </div>
+      <p class="section-desc">本节对该胜任力模型的MECE建模思路进行系统性反思，明确继承与修正的方向，确保模型既保持结构严谨性，又贴近实际用人场景。</p>
+      
+      <div class="critique-grid">
+        <!-- 扬弃表格 -->
+        <div class="critique-section">
+          <h3>值得「扬」（继承）</h3>
+          <table class="critique-table">
+            <thead>
+              <tr>
+                <th>建模思路</th>
+                <th>保留理由</th>
+                <th>修正方向</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MECE六维框架</td>
+                <td>结构完整，相互独立，避免遗漏</td>
+                <td>保持核心框架，根据岗位适度调整维度权重</td>
+              </tr>
+              <tr>
+                <td>三层结构（维度→行为→证据）</td>
+                <td>层次清晰，可操作性强</td>
+                <td>行为描述需更具体，避免通用表述</td>
+              </tr>
+              <tr>
+                <td>官网验证机制</td>
+                <td>增强模型可信度，避免主观臆断</td>
+                <td>优先使用校招/实习入口，避免层级错配</td>
+              </tr>
+              <!-- 更多行... -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="critique-section">
+          <h3>值得「弃」（修正）</h3>
+          <table class="critique-table critique-table-warn">
+            <thead>
+              <tr>
+                <th>建模思路</th>
+                <th>问题所在</th>
+                <th>修正方向</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>过度依赖JD bullet points</td>
+                <td>JD是事后描述，不是用人判断</td>
+                <td>先建模人，再对照验证，而非直接组装</td>
+              </tr>
+              <tr>
+                <td>技能清单式维度命名</td>
+                <td>混淆证据层与特质层</td>
+                <td>维度聚焦"人"的稳定特质，工具放证据层</td>
+              </tr>
+              <tr>
+                <td>忽视人才级别的差异</td>
+                <td>校招与资深用同一标准</td>
+                <td>根据级别调整期望水位和验证来源</td>
+              </tr>
+              <!-- 更多行... -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- 修正结论汇总 -->
+      <div class="correction-box">
+        <h4>修正结论汇总</h4>
+        <ul>
+          <li>保持MECE六维框架，但根据岗位特性调整维度命名和权重</li>
+          <li>严格区分三层结构：特质（维度）→ 行为（可观察）→ 证据（场景）</li>
+          <li>官网验证优先校招/实习入口，避免用资深岗位对标年轻候选人</li>
+          <li>行为描述必须具体可观察，避免"有责任心"等模糊表述</li>
+        </ul>
+      </div>
+    </section>
+    
     <!-- 01 旭日图：人才画像全景 -->
     <section>...</section>
     
     <!-- 02 矩形树图：评估关注结构 -->
     <section>...</section>
     
-    <!-- 03 散点图：人才分型象限 -->
-    <section>...</section>
+    <!-- 03 散点图：人才分型象限 + 行为锚点表格 -->
+    <section>
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="section-title">人才分型象限 + 行为锚点</span>
+      </div>
+      <p class="section-desc">将候选人在各维度的表现投射到「成长潜力×当前能力」象限，识别不同发展路径的人才分型。</p>
+      
+      <!-- 散点图 -->
+      <div class="chart-container">...</div>
+      
+      <!-- 行为锚点表格 -->
+      <div class="persona-table">
+        <table>
+          <thead>
+            <tr>
+              <th>人才分型</th>
+              <th>位置特征</th>
+              <th>核心特征</th>
+              <th>典型信号</th>
+              <th>培养建议</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🌱 潜力型</td>
+              <td>潜力高 × 能力低</td>
+              <td>学习敏锐度高、好奇心强、适应性好</td>
+              <td>快速掌握新概念、主动提问、跨领域迁移</td>
+              <td>给予挑战性任务、配对导师、关注基础夯实</td>
+            </tr>
+            <tr>
+              <td>⚡ 达标型</td>
+              <td>潜力中 × 能力中</td>
+              <td>执行力强、稳定性好、团队协作佳</td>
+              <td>按时交付、主动汇报、乐于帮助他人</td>
+              <td>逐步增加挑战性、鼓励承担更多责任</td>
+            </tr>
+            <tr>
+              <td>🔥 突出型</td>
+              <td>潜力高 × 能力高</td>
+              <td>成长型思维、卓越交付、影响力强</td>
+              <td>超预期交付、带动团队、推动创新</td>
+              <td>授权更多自主权、战略性项目、领导力培养</td>
+            </tr>
+            <tr>
+              <td>⏸️ 平台型</td>
+              <td>潜力中 × 能力高</td>
+              <td>经验丰富、稳健可靠、专业深度</td>
+              <td>独当一面、知识沉淀、稳定输出</td>
+              <td>保持稳定发挥、适度引入新挑战、传承经验</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
     
     <!-- 04 能力树：完整MECE结构 -->
     <section>...</section>
+    
+    <!-- 【可选】自测矩阵（三水位对照） -->
+    <!-- 仅当用户选择添加自测矩阵功能时包含此节 -->
+    <section class="self-check-section">
+      <div class="section-header">
+        <span class="section-num">04.5</span>
+        <span class="section-title">自测矩阵（三水位对照）</span>
+      </div>
+      <p class="section-desc">帮助候选人自我评估在各维度的当前水位，明确下一步努力方向。适合自测、培训发展、辅导对话等场景。</p>
+      
+      <div class="matrix-legend">
+        <span><span class="matrix-level level-seedling"></span> 🌱 起步 — 尚未稳定展现该特质</span>
+        <span><span class="matrix-level level-qualified"></span> ⚡ 达标 — 在多数场景能稳定展现</span>
+        <span><span class="matrix-level level-outstanding"></span> 🔥 突出 — 在复杂场景也能引领示范</span>
+      </div>
+      
+      <div class="self-check-matrix">
+        <div class="matrix-grid">
+          <!-- 表头 -->
+          <div class="matrix-header">胜任力维度</div>
+          <div class="matrix-header">🌱 起步</div>
+          <div class="matrix-header">⚡ 达标</div>
+          <div class="matrix-header">🔥 突出</div>
+          <div class="matrix-header">下一步努力方向</div>
+          
+          <!-- 示例行 -->
+          <div class="matrix-cell matrix-dim-name">方向与标尺</div>
+          <div class="matrix-cell">
+            <label><input type="radio" name="dim1" value="seedling"><span>能完成指定任务，但对目标主动思考较少</span></label>
+          </div>
+          <div class="matrix-cell">
+            <label><input type="radio" name="dim1" value="qualified"><span>能理解任务背景，对质量有一定追求</span></label>
+          </div>
+          <div class="matrix-cell">
+            <label><input type="radio" name="dim1" value="outstanding"><span>主动定义目标，推动标准提升，带动他人</span></label>
+          </div>
+          <div class="matrix-cell matrix-action">→ 主动认领有挑战的子目标，记录质量反思</div>
+          
+          <!-- 更多维度行... -->
+        </div>
+      </div>
+      
+      <div class="matrix-tip">
+        <strong>使用建议：</strong>
+        <ul>
+          <li>建议在安静的时段独立完成，避免匆忙勾选</li>
+          <li>如有具体事例支撑选择，会更有价值</li>
+          <li>「下一步」方向可与导师或上级讨论确认</li>
+        </ul>
+      </div>
+    </section>
     
     <!-- 05 官网岗位链接（人工检验） -->
     <section>
@@ -340,6 +543,155 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
 - value 仅表达相对关注重心，不表示精确分数
 - 颜色区分6个主维度
 - 所有图表支持SVG导出
+
+**Section 00 批判性分析样式规范：**
+```css
+.critique-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.critique-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+.critique-section:first-child h3 { color: #059669; }
+.critique-section:last-child h3 { color: #dc2626; }
+.critique-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.critique-table th,
+.critique-table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.critique-table th {
+  background: var(--surface);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+.critique-table-warn tr:hover td { background: rgba(220,38,38,0.04); }
+.correction-box {
+  background: rgba(59,130,246,0.06);
+  border-left: 4px solid var(--primary);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+.correction-box h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+}
+.correction-box ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.correction-box li {
+  margin-bottom: 0.35rem;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+@media (max-width: 900px) {
+  .critique-grid { grid-template-columns: 1fr; }
+}
+```
+
+**人才分型表格样式规范：**
+```css
+.persona-table {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+.persona-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.persona-table th,
+.persona-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.persona-table th {
+  background: var(--surface);
+  font-weight: 700;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+.persona-table td:first-child {
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+}
+.persona-table tr:hover td {
+  background: var(--surface);
+}
+```
+
+**自测矩阵样式规范（可选功能）：**
+```css
+.self-check-matrix {
+  margin-top: 1.5rem;
+}
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+  gap: 0;
+  font-size: 0.88rem;
+}
+.matrix-header {
+  background: var(--surface);
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.matrix-header,
+.matrix-cell {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.matrix-dim-name {
+  font-weight: 600;
+  color: var(--text);
+}
+.matrix-cell { color: var(--text-muted); }
+.matrix-cell label { display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; }
+.matrix-level {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.level-seedling { background: #22c55e; }   /* 起步 */
+.level-qualified { background: #3b82f6; }  /* 达标 */
+.level-outstanding { background: #f59e0b; } /* 突出 */
+.matrix-action { font-size: 0.85rem; color: var(--text-muted); }
+.matrix-legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.matrix-legend span { display: flex; align-items: center; gap: 0.4rem; }
+@media (max-width: 900px) {
+  .matrix-grid { grid-template-columns: 1fr; }
+  .matrix-header { display: none; }
+  .matrix-cell { border-left: 3px solid var(--border); padding-left: 1rem; }
+}
+```
 
 **链接卡片样式规范：**
 ```css
