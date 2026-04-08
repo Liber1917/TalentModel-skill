@@ -292,6 +292,7 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
 - 用浏览器打开HTML文件即可查看完整可视化效果
 - 如需分享报告，请同时分享HTML文件和echarts.min.js
 - 报告完全离线可用，无需网络连接
+- 每个图表区域提供导出按钮，支持导出为 PNG/SVG/JPEG 格式
 
 ---
 
@@ -320,10 +321,34 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
     <div class="model-note">...</div>
     
     <!-- 01 旭日图：人才画像全景 -->
-    <section>...</section>
+    <section>
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="section-title">人才画像全景</span>
+      </div>
+      <div class="chart-wrapper">
+        <div class="chart-toolbar">
+          <button class="chart-export-btn" onclick="exportChart('chart-sunburst', 'png')" title="导出PNG">PNG</button>
+          <button class="chart-export-btn" onclick="exportChart('chart-sunburst', 'svg')" title="导出SVG">SVG</button>
+        </div>
+        <div id="chart-sunburst" class="chart-container">...</div>
+      </div>
+    </section>
     
     <!-- 02 矩形树图：评估关注结构 -->
-    <section>...</section>
+    <section>
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="section-title">评估关注结构</span>
+      </div>
+      <div class="chart-wrapper">
+        <div class="chart-toolbar">
+          <button class="chart-export-btn" onclick="exportChart('chart-treemap', 'png')" title="导出PNG">PNG</button>
+          <button class="chart-export-btn" onclick="exportChart('chart-treemap', 'svg')" title="导出SVG">SVG</button>
+        </div>
+        <div id="chart-treemap" class="chart-container">...</div>
+      </div>
+    </section>
     
     <!-- 03 散点图：人才分型象限 + 行为锚点表格 -->
     <section>
@@ -334,7 +359,19 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
       <p class="section-desc">将候选人在各维度的表现投射到「成长潜力×当前能力」象限，识别不同发展路径的人才分型。</p>
       
       <!-- 散点图 -->
-      <div class="chart-container">...</div>
+      <div class="chart-wrapper">
+        <div class="chart-toolbar">
+          <button class="chart-export-btn" onclick="exportChart('chart-scatter', 'png')" title="导出PNG">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PNG
+          </button>
+          <button class="chart-export-btn" onclick="exportChart('chart-scatter', 'svg')" title="导出SVG">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            SVG
+          </button>
+        </div>
+        <div id="chart-scatter" class="chart-container">...</div>
+      </div>
       
       <!-- 行为锚点表格 -->
       <div class="persona-table">
@@ -383,7 +420,19 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
     </section>
     
     <!-- 04 能力树：完整MECE结构 -->
-    <section>...</section>
+    <section>
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <span class="section-title">完整MECE结构</span>
+      </div>
+      <div class="chart-wrapper">
+        <div class="chart-toolbar">
+          <button class="chart-export-btn" onclick="exportChart('chart-tree', 'png')" title="导出PNG">PNG</button>
+          <button class="chart-export-btn" onclick="exportChart('chart-tree', 'svg')" title="导出SVG">SVG</button>
+        </div>
+        <div id="chart-tree" class="chart-container">...</div>
+      </div>
+    </section>
     
     <!-- 【可选】自测矩阵（三水位对照） -->
     <!-- 仅当用户选择添加自测矩阵功能时包含此节 -->
@@ -469,6 +518,82 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
 - value 仅表达相对关注重心，不表示精确分数
 - 颜色区分6个主维度
 - 所有图表支持SVG导出
+
+**图表导出功能规范：**
+
+```css
+/* 图表工具栏 */
+.chart-wrapper {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+.chart-toolbar {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.35rem;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.chart-wrapper:hover .chart-toolbar {
+  opacity: 1;
+}
+.chart-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.chart-export-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: rgba(59,130,246,0.06);
+}
+.chart-container {
+  min-height: 400px;
+}
+@media (max-width: 768px) {
+  .chart-toolbar { opacity: 1; }
+  .chart-container { min-height: 300px; }
+}
+```
+
+**导出功能 JS 实现：**
+```javascript
+// 使用 ECharts 内置的导出功能
+function exportChart(chartId, format) {
+  const chart = echarts.getInstanceByDom(document.getElementById(chartId));
+  if (!chart) return;
+  
+  const formats = {
+    png: { type: 'png', quality: 1 },
+    jpeg: { type: 'jpeg', quality: 0.8 },
+    svg: { type: 'svg' }
+  };
+  
+  const option = formats[format];
+  if (!option) return;
+  
+  // 生成数据URL或SVG字符串
+  const url = chart.getDataURL(option);
+  
+  // 自动下载
+  const link = document.createElement('a');
+  link.download = `${chartId}_${Date.now()}.${format}`;
+  link.href = url;
+  link.click();
+}
+```
 
 **人才分型表格样式规范：**
 ```css
