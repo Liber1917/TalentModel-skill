@@ -236,11 +236,22 @@ metadata:
 
 **禁止**：不要用JD bullet points直接组装模型。
 
-### Step 9: 边界精炼
-根据验证结果调整：
-- 强化被多公司共同强调的维度
-- 将仅个别公司提到的降级为证据
-- 修正人才级别不匹配的内容
+### Step 9: 边界精炼（融入扬弃反思）
+根据官网验证结果，对初始模型进行批判性调整：
+
+**「扬」— 保留并强化的内容：**
+- 被多公司共同强调的维度 → 确认为核心特质
+- 结构清晰、三层分层合理的部分 → 保持框架稳定
+- 贴合人才级别的期望水位 → 确保不偏高/偏低
+
+**「弃」— 修正或降级的内容：**
+- 与官网差异较大的表述 → 修正措辞或边界
+- 仅个别公司提到的要求 → 降级为证据层
+- 混淆证据层与特质层的内容 → 重新归位
+- 层级错配的期望（如校招用了资深标准）→ 调整水位
+
+**调整优先级：** wording → evidence → boundary → core dimensions
+（先改表述，再补证据，再调边界，最后才动一级维度）
 
 ### Step 10: 生成输出
 
@@ -307,91 +318,6 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
   <main>
     <!-- 建模口径说明 -->
     <div class="model-note">...</div>
-    
-    <!-- 00 批判性分析：MECE建模思路扬弃 -->
-    <section>
-      <div class="section-header">
-        <span class="section-num">00</span>
-        <span class="section-title">批判性分析：MECE建模思路扬弃</span>
-      </div>
-      <p class="section-desc">本节对该胜任力模型的MECE建模思路进行系统性反思，明确继承与修正的方向，确保模型既保持结构严谨性，又贴近实际用人场景。</p>
-      
-      <div class="critique-grid">
-        <!-- 扬弃表格 -->
-        <div class="critique-section">
-          <h3>值得「扬」（继承）</h3>
-          <table class="critique-table">
-            <thead>
-              <tr>
-                <th>建模思路</th>
-                <th>保留理由</th>
-                <th>修正方向</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>MECE六维框架</td>
-                <td>结构完整，相互独立，避免遗漏</td>
-                <td>保持核心框架，根据岗位适度调整维度权重</td>
-              </tr>
-              <tr>
-                <td>三层结构（维度→行为→证据）</td>
-                <td>层次清晰，可操作性强</td>
-                <td>行为描述需更具体，避免通用表述</td>
-              </tr>
-              <tr>
-                <td>官网验证机制</td>
-                <td>增强模型可信度，避免主观臆断</td>
-                <td>优先使用校招/实习入口，避免层级错配</td>
-              </tr>
-              <!-- 更多行... -->
-            </tbody>
-          </table>
-        </div>
-        
-        <div class="critique-section">
-          <h3>值得「弃」（修正）</h3>
-          <table class="critique-table critique-table-warn">
-            <thead>
-              <tr>
-                <th>建模思路</th>
-                <th>问题所在</th>
-                <th>修正方向</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>过度依赖JD bullet points</td>
-                <td>JD是事后描述，不是用人判断</td>
-                <td>先建模人，再对照验证，而非直接组装</td>
-              </tr>
-              <tr>
-                <td>技能清单式维度命名</td>
-                <td>混淆证据层与特质层</td>
-                <td>维度聚焦"人"的稳定特质，工具放证据层</td>
-              </tr>
-              <tr>
-                <td>忽视人才级别的差异</td>
-                <td>校招与资深用同一标准</td>
-                <td>根据级别调整期望水位和验证来源</td>
-              </tr>
-              <!-- 更多行... -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-      
-      <!-- 修正结论汇总 -->
-      <div class="correction-box">
-        <h4>修正结论汇总</h4>
-        <ul>
-          <li>保持MECE六维框架，但根据岗位特性调整维度命名和权重</li>
-          <li>严格区分三层结构：特质（维度）→ 行为（可观察）→ 证据（场景）</li>
-          <li>官网验证优先校招/实习入口，避免用资深岗位对标年轻候选人</li>
-          <li>行为描述必须具体可观察，避免"有责任心"等模糊表述</li>
-        </ul>
-      </div>
-    </section>
     
     <!-- 01 旭日图：人才画像全景 -->
     <section>...</section>
@@ -543,66 +469,6 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
 - value 仅表达相对关注重心，不表示精确分数
 - 颜色区分6个主维度
 - 所有图表支持SVG导出
-
-**Section 00 批判性分析样式规范：**
-```css
-.critique-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-.critique-section h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  color: var(--text);
-}
-.critique-section:first-child h3 { color: #059669; }
-.critique-section:last-child h3 { color: #dc2626; }
-.critique-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.88rem;
-}
-.critique-table th,
-.critique-table td {
-  padding: 0.6rem 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-.critique-table th {
-  background: var(--surface);
-  font-weight: 600;
-  color: var(--text-muted);
-  font-size: 0.82rem;
-}
-.critique-table-warn tr:hover td { background: rgba(220,38,38,0.04); }
-.correction-box {
-  background: rgba(59,130,246,0.06);
-  border-left: 4px solid var(--primary);
-  border-radius: 8px;
-  padding: 1rem 1.25rem;
-}
-.correction-box h4 {
-  font-size: 0.95rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: var(--primary);
-}
-.correction-box ul {
-  margin: 0;
-  padding-left: 1.25rem;
-}
-.correction-box li {
-  margin-bottom: 0.35rem;
-  color: var(--text);
-  font-size: 0.9rem;
-}
-@media (max-width: 900px) {
-  .critique-grid { grid-template-columns: 1fr; }
-}
-```
 
 **人才分型表格样式规范：**
 ```css
