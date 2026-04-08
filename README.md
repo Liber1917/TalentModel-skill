@@ -188,7 +188,7 @@ TalentModel-skill/
 ## 参考资料
 
 - [MECE 原则](https://en.wikipedia.org/wiki/MECE_principle) — 相互独立，完全穷尽
-- [胜任力模型方法论](https://en.wikipedia.org/wiki/Competency_management) — 行为事件访谈法 (BEI)
+- [行为事件访谈法 (BEI)](https://wiki.mbalib.com/wiki/%E8%A1%8C%E4%B8%BA%E4%BA%8B%E4%BB%B6%E8%AE%BF%E8%B0%88%E6%B3%95) — 揭示胜任特征的主要工具（MBA智库百科）
 
 ---
 
