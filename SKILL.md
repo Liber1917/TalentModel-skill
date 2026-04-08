@@ -248,6 +248,27 @@ metadata:
 - 无虚假量化权重
 - 验证链接可点击
 
+**HTML生成时必须同时提供：**
+1. `{ROLE_NAME}_胜任力模型.html` — 主报告文件
+2. `echarts.min.js` — ECharts图表库（必须复制到同一目录）
+
+**操作步骤：**
+```bash
+# 1. 生成HTML报告
+write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=html_content)
+
+# 2. 复制echarts.min.js到工作目录（关键！）
+# 从Skill的assets目录复制echarts.min.js到用户工作目录
+# 源文件路径: .workbuddy/skills/competency-model/assets/echarts.min.js
+# 目标路径: {workspace}/echarts.min.js
+```
+
+**使用说明（告知用户）：**
+- HTML报告需要与`echarts.min.js`在同一目录才能正常显示图表
+- 用浏览器打开HTML文件即可查看完整可视化效果
+- 如需分享报告，请同时分享HTML文件和echarts.min.js
+- 报告完全离线可用，无需网络连接
+
 ---
 
 ## HTML报告模板规范
