@@ -39,7 +39,7 @@
 
 ## 示例
 
-查看 `examples/ai_infra_campus.txt` 了解完整的 AI Infra 校招岗位配置示例。
+查看 `examples/ai_infra_campus.txt` 了解一个完整的配置示例（AI Infra 校招岗位）。
 
 ---
 
