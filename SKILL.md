@@ -1,5 +1,5 @@
 ---
-name: competency-model
+name: talent-model
 description: "岗位胜任力建模工具：通过交互式配置向导，基于候选人画像而非技能清单，生成三层结构（核心维度→可观察行为→角色证据）的胜任力模型报告。支持HTML可视化输出。Competency model builder with interactive config, MECE structure, official validation, and HTML reports."
 license: MIT
 compatibility: "Requires web access for official validation; echarts.min.js included for offline visualization"
