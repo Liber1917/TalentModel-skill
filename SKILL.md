@@ -307,8 +307,24 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
     <!-- 04 能力树：完整MECE结构 -->
     <section>...</section>
     
-    <!-- 05 官网验证链接 -->
-    <section>...</section>
+    <!-- 05 官网岗位链接（人工检验） -->
+    <section>
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <span class="section-title">官网岗位链接（人工检验）</span>
+      </div>
+      <p class="section-desc">以下链接仅作为人工校验这个模型的外部参照：能切到校招、应届生招聘或实习的，已优先切换；其余保留官方招聘入口作为补充。目的不是要求年轻候选人与资深岗位逐项对标，而是观察不同公司在早期人才身上重视哪些稳定特征。</p>
+      <div class="validation-note">阅读建议：优先关注岗位或校招页中反复出现的学习潜力、主动性、责任感、工程基础、协作气质与长期建设倾向，而不是逐条比对工具栈。对年轻候选人，更适合看"能否长成"而不是"是否已经全部具备"。</div>
+      <div class="link-grid">
+        <!-- 链接卡片示例 -->
+        <a class="link-card" href="{公司官网校招/实习链接}" target="_blank" rel="noopener noreferrer">
+          <div class="link-card-meta">{公司名} · 官方校招 / 实习</div>
+          <div class="link-card-title">{岗位名称}</div>
+          <div class="link-card-desc">检验点：{简明说明这个链接用来检验什么，例如"观察对潜力、主动性、协作气质的要求"}</div>
+        </a>
+        <!-- 更多链接卡片... -->
+      </div>
+    </section>
   </main>
   
   <footer>...</footer>
@@ -324,6 +340,70 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
 - value 仅表达相对关注重心，不表示精确分数
 - 颜色区分6个主维度
 - 所有图表支持SVG导出
+
+**链接卡片样式规范：**
+```css
+.validation-note {
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.link-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--surface);
+  border: 1px solid rgba(59,130,246,0.16);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+  border-color: rgba(59,130,246,0.3);
+}
+.link-card-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+.link-card-meta {
+  font-size: 0.82rem;
+  color: var(--primary);
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+.link-card-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+@media (max-width: 900px) {
+  .link-grid { grid-template-columns: 1fr; }
+}
+```
+
+**链接选择优先级：**
+1. 优先使用官方校招/实习入口
+2. 其次使用官方 careers/招聘主页
+3. 最后才用具体岗位页面（标注为"上限参照"）
+
+**链接卡片标签规范：**
+- 校招/实习入口：`{公司} · 官方校招 / 实习`
+- 官方招聘主页：`{公司} · 官方招聘入口`
+- 上限参照岗位：`{公司} · 官方岗位（上限参照）`
+
+**每个卡片必须包含：**
+- `link-card-meta`：公司名和入口类型
+- `link-card-title`：具体岗位或页面名称
+- `link-card-desc`：**必须包含"检验点"**，说明这个链接用来检验模型的哪个维度或特质
 
 ---
 
