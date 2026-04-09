@@ -344,10 +344,19 @@ metadata:
 
 **如果是HTML格式，额外要求：**
 - 单文件、可本地运行
-- 4个图表：旭日图、矩形树图、散点图、能力树
+- 4个图表：旭日图、矩形树图、散点图、能力树（**缺一不可**）
 - 管理咨询风格视觉
 - 无虚假量化权重
 - 验证链接可点击
+
+**⚠️ HTML图表硬约束 — 禁止项：**
+- ❌ **禁止使用雷达图（radar）**：胜任力报告的高频训练数据联想，但不适合展示多层级维度结构
+- ❌ **禁止使用柱状图（bar）/折线图（line）**：这些是通用数据图表，不传达胜任力模型的层级关系
+- ❌ **禁止使用饼图（pie）**：胜任力维度不是比例分割关系
+- ❌ **禁止省略任何图表**：4个图表必须全部生成，缺少任何一个报告不合格
+- ✅ **只允许**：sunburst（旭日图）、treemap（矩形树图）、scatter（散点图）、tree（能力树）
+
+> **原因**：大模型生成"胜任力+自评"类内容时，训练数据中高频出现雷达图，导致统计惯性压倒规范要求。以上禁止项是经过测试验证的失败模式，必须硬性约束。
 
 **HTML生成时必须同时提供：**
 1. `{ROLE_NAME}_胜任力模型.html` — 主报告文件
@@ -408,10 +417,30 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
           <button class="chart-export-btn" onclick="exportChart('chart-sunburst', 'png')" title="导出PNG">PNG</button>
           <button class="chart-export-btn" onclick="exportChart('chart-sunburst', 'svg')" title="导出SVG">SVG</button>
         </div>
-        <div id="chart-sunburst" class="chart-container">...</div>
+        <div id="chart-sunburst" class="chart-container">
+          <!-- ECharts 旭日图配置示例（禁止替换为 radar/bar/line/pie）：
+          {
+            type: 'sunburst',
+            data: [{
+              name: 'D1 维度名', value: 10,
+              children: [
+                { name: 'B1.1 行为名', value: 4,
+                  children: [
+                    { name: 'E1.1.1 证据名', value: 1 },
+                    { name: 'E1.1.2 证据名', value: 1 }
+                  ]
+                },
+                { name: 'B1.2 行为名', value: 3, children: [...] }
+              ]
+            }, { name: 'D2 维度名', value: 8, children: [...] }],
+            radius: ['15%', '90%'],
+            label: { rotate: 'radial' }
+          }
+          -->
+        </div>
       </div>
     </section>
-    
+
     <!-- 02 矩形树图：评估关注结构 -->
     <section>
       <div class="section-header">
@@ -423,7 +452,33 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
           <button class="chart-export-btn" onclick="exportChart('chart-treemap', 'png')" title="导出PNG">PNG</button>
           <button class="chart-export-btn" onclick="exportChart('chart-treemap', 'svg')" title="导出SVG">SVG</button>
         </div>
-        <div id="chart-treemap" class="chart-container">...</div>
+        <div id="chart-treemap" class="chart-container">
+          <!-- ECharts 矩形树图配置示例（禁止替换为 radar/bar/line/pie）：
+          {
+            type: 'treemap',
+            data: [
+              { name: 'D1 产品思维 30%', value: 30,
+                children: [
+                  { name: 'B1.1 需求分析', value: 15 },
+                  { name: 'B1.2 用户洞察', value: 10 },
+                  { name: 'B1.3 方案设计', value: 5 }
+                ]
+              },
+              { name: 'D2 执行力 25%', value: 25,
+                children: [
+                  { name: 'B2.1 项目管理', value: 15 },
+                  { name: 'B2.2 跨部门协作', value: 10 }
+                ]
+              },
+              { name: 'D3 技术理解 20%', value: 20, children: [...] },
+              { name: 'D4 商业敏感 15%', value: 15, children: [...] },
+              { name: 'D5 沟通影响 10%', value: 10, children: [...] }
+            ],
+            label: { formatter: '{b}' },
+            levels: [{ itemStyle: { borderWidth: 0 } }]
+          }
+          -->
+        </div>
       </div>
     </section>
     
@@ -447,7 +502,29 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
             SVG
           </button>
         </div>
-        <div id="chart-scatter" class="chart-container">...</div>
+        <div id="chart-scatter" class="chart-container">
+          <!-- ECharts 散点图配置示例（禁止替换为 radar/bar/line/pie）：
+          {
+            type: 'scatter',
+            data: [
+              [3.5, 2.5, 'D1 产品思维', '潜力型'],  // [x=潜力, y=能力, 维度名, 分型名]
+              [4.2, 4.0, 'D2 执行力', '突出型'],
+              [2.8, 3.8, 'D3 技术理解', '平台型'],
+              [3.0, 2.0, 'D4 商业敏感', '达标型'],
+              [4.5, 3.2, 'D5 沟通影响', '突出型']
+            ],
+            xAxis: { name: '成长潜力', min: 1, max: 5 },
+            yAxis: { name: '当前能力', min: 1, max: 5 },
+            markArea: {
+              silent: true,
+              data: [
+                [{ xAxis: 3, name: '潜力高' }, { xAxis: 5 }],
+                [{ xAxis: 1, name: '潜力低' }, { xAxis: 3 }]
+              ]
+            }
+          }
+          -->
+        </div>
       </div>
       
       <!-- 行为锚点表格 -->
@@ -507,7 +584,33 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
           <button class="chart-export-btn" onclick="exportChart('chart-tree', 'png')" title="导出PNG">PNG</button>
           <button class="chart-export-btn" onclick="exportChart('chart-tree', 'svg')" title="导出SVG">SVG</button>
         </div>
-        <div id="chart-tree" class="chart-container">...</div>
+        <div id="chart-tree" class="chart-container">
+          <!-- ECharts 能力树/矩形树图配置示例（禁止替换为 radar/bar/line/pie）：
+          {
+            type: 'tree',
+            orient: 'LR',  // 左右布局，便于展示横向层级
+            data: [{
+              name: '{ROLE_NAME}\n胜任力模型',
+              children: [
+                {
+                  name: 'D1 产品思维',
+                  children: [
+                    { name: 'B1.1 需求分析', children: [{ name: 'E1.1.1 能拆解需求' }, { name: 'E1.1.2 优先级判断' }] },
+                    { name: 'B1.2 用户洞察', children: [{ name: 'E1.2.1 用户访谈' }, { name: 'E1.2.2 行为数据分析' }] }
+                  ]
+                },
+                {
+                  name: 'D2 执行力',
+                  children: [
+                    { name: 'B2.1 项目管理', children: [{ name: 'E2.1.1 排期计划' }, { name: 'E2.1.2 风险识别' }] },
+                    { name: 'B2.2 跨部门协作', children: [{ name: 'E2.2.1 推动对齐' }, { name: 'E2.2.2 结果导向' }] }
+                  ]
+                }
+              ]
+            }]
+          }
+          -->
+        </div>
       </div>
     </section>
     
@@ -827,6 +930,36 @@ function exportChart(chartId, format) {
 
 ---
 
+## 报告生成后自检清单
+
+**每次生成 HTML 报告后，在返回结果前必须逐项检查：**
+
+**内容完整性：**
+- [ ] 报告包含所有一级维度（核心特质），无遗漏
+- [ ] 每个维度下有二级行为，且行为可观察、可区分
+- [ ] 每个行为下有三级证据，且证据不直接等于工具/语言/框架
+- [ ] 有"验证结论"节，说明从多元企业信息中提炼出的发现
+
+**图表规范性（硬约束）：**
+- [ ] **旭日图存在**：`id="chart-sunburst"` 且 ECharts 配置 `type: 'sunburst'`（不是 radar/bar/line/pie）
+- [ ] **矩形树图存在**：`id="chart-treemap"` 且 `type: 'treemap'`（不是 radar/bar/line/pie）
+- [ ] **散点图存在**：`id="chart-scatter"` 且 `type: 'scatter'`（不是 radar/bar/line/pie）
+- [ ] **能力树存在**：`id="chart-tree"` 且 `type: 'tree'`（不是 radar/bar/line/pie）
+- [ ] 四个图表全部生成，缺少任何一个 → 必须补充后再输出
+
+**echarts.min.js 关联：**
+- [ ] `<script src="echarts.min.js">` 存在于 `<head>` 或 `<body>` 底部
+- [ ] echarts.min.js 文件已复制到 HTML 文件同目录
+
+**格式规范：**
+- [ ] 无虚假量化权重（不用百分比/分数表达维度重要程度，只用相对"关注重心"）
+- [ ] 验证链接卡片有实际可点击 URL，且描述包含"检验点"说明
+- [ ] 报告可本地打开（无 CDN 依赖路径）
+
+**若发现违规项 → 立即修正后再输出，不要忽略任何一项。**
+
+---
+
 ## 失败模式防范
 
 执行中必须主动避免：
@@ -841,6 +974,7 @@ function exportChart(chartId, format) {
 | 虚假精度 | 不分配数值权重，只用相对关注重心 |
 | **大厂偏差** | **验证公司不能全为互联网大厂；Q5 非互联网行业时，大厂占比不超过50%；大厂特有要求降级为证据层** |
 | **先验框架陷阱** | **企业信息采集（Step 3.5）必须在起草维度（Step 4）之前执行；禁止先套框架再找证据支持** |
+| **图表惯性漂移** | **HTML报告必须使用 sunburst/treemap/scatter/tree 四种图表；禁止使用 radar/bar/line/pie；生成后必须按自检清单逐项验证图表类型** |
 
 ---
 
