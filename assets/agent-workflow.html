@@ -334,53 +334,19 @@
 
     /* ── 导出功能 ────────────────────────────────────────────── */
     document.getElementById('btn-svg').addEventListener('click', () => {
-      const svgEl = document.querySelector('#chart > svg');
-      if (!svgEl) { alert('SVG 尚未渲染，请稍候'); return; }
-      const serializer = new XMLSerializer();
-      let svgStr = serializer.serializeToString(svgEl);
-
-      // 添加字体声明避免中文乱码（嵌入系统字体）
-      const defsTag = svgStr.indexOf('<defs') !== -1 ? '' : '<defs><style>@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC&amp;display=swap");</style></defs>';
-      svgStr = svgStr.replace('<svg', defsTag + '<svg style="font-family: \'Noto Sans SC\', \'PingFang SC\', \'Microsoft YaHei\', sans-serif;"');
-
-      const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
+      const svgDataUrl = chart.getDataURL({ type: 'svg', pixelRatio: 2, backgroundColor: '#fff' });
       const a = document.createElement('a');
-      a.href = url;
+      a.href = svgDataUrl;
       a.download = 'agent-workflow.svg';
       a.click();
-      URL.revokeObjectURL(url);
     });
 
     document.getElementById('btn-png').addEventListener('click', () => {
-      const svgEl = document.querySelector('#chart > svg');
-      if (!svgEl) { alert('SVG 尚未渲染，请稍候'); return; }
-      const serializer = new XMLSerializer();
-      const svgStr = serializer.serializeToString(svgEl);
-      const svgWidth = svgEl.getAttribute('width') || 1200;
-      const svgHeight = svgEl.getAttribute('height') || 480;
-      const scale = 2; // 2x 分辨率
-
-      const canvas = document.createElement('canvas');
-      canvas.width = svgWidth * scale;
-      canvas.height = svgHeight * scale;
-      const ctx = canvas.getContext('2d');
-      ctx.scale(scale, scale);
-
-      const img = new Image();
-      const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(svgBlob);
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
-        canvas.toBlob(blob => {
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = 'agent-workflow.png';
-          a.click();
-        });
-      };
-      img.src = url;
+      const pngDataUrl = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
+      const a = document.createElement('a');
+      a.href = pngDataUrl;
+      a.download = 'agent-workflow.png';
+      a.click();
     });
   </script>
 </body>
