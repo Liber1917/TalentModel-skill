@@ -431,7 +431,7 @@ metadata:
 - ✅ **只允许**：sunburst（旭日图）、treemap（矩形树图）、scatter（散点图）、tree（能力树）
 - ❌ **图表中禁止使用量化数值**（value/坐标/百分比/轴刻度）：胜任力模型无真实测量数据，图表value只表示相对结构比例，ECharts示例中的数值均为结构占位符；严禁在图表中填写精确数字
 
-> **图表方案：CDN ECharts 为主。** ECharts 通过 jsdelivr CDN 引入，无需分发文件，报告保持单文件。图表数据使用统一占位值（`value: 1`），仅表示结构关系，无量化幻觉风险。
+> **图表方案：CDN ECharts 为主，CSS/HTML 能力树为备。** ECharts 通过 jsdelivr CDN 引入，无需分发文件，报告保持单文件。能力树（完整MECE结构）用 ECharts `tree`（LR横向布局，`layerPadding` 调宽控制间距），导出 PNG/SVG；CSS/HTML 树（`<ul>` 虚线连接）作为备选折叠在节底部。图表数据使用统一占位值（`value: 1`），仅表示结构关系，无量化幻觉风险。
 
 > **原因**：大模型生成"胜任力+自评"类内容时，训练数据中高频出现雷达图，导致统计惯性压倒规范要求。同时大模型倾向于为图表填写精确数值（权重/百分比/坐标），这是幻觉高发区。使用 CSS/纯HTML 方案可以从根本上规避数据幻觉。以上禁止项是经过测试验证的失败模式，必须硬性约束。
 
@@ -814,33 +814,54 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
         <span class="section-num">04</span>
         <span class="section-title">完整MECE结构</span>
       </div>
+      <p class="section-desc">先按二级行为发问，再用三级证据确认真实性。这个结构更适合面试设计和评审校准。</p>
       <div class="chart-wrapper">
         <div class="chart-toolbar">
           <button class="chart-export-btn" onclick="exportChart('chart-tree', 'png')" title="导出PNG">PNG</button>
           <button class="chart-export-btn" onclick="exportChart('chart-tree', 'svg')" title="导出SVG">SVG</button>
         </div>
         <div id="chart-tree" class="chart-container">
-          <!-- ECharts 能力树/矩形树图配置示例（禁止替换为 radar/bar/line/pie）：
+          <!-- ECharts 能力树配置示例（横向 LR 布局）：
           {
             type: 'tree',
-            orient: 'LR',  // 左右布局，便于展示横向层级
+            orient: 'LR',  // 横向左右布局
+            symbol: 'rectangle',
+            symbolSize: [130, 34],  // 节点宽度收窄，控制横向占用
+            nodePadding: 12,
+            layerPadding: 50,       // ← 层级间横向距离调大，避免叠压
+            initialTreeDepth: 2,    // 默认展开到 B 层（E 层折叠），首次展开不会太宽
+            roam: true,
+            itemStyle: { borderRadius: 8 },
+            label: { fontSize: 12, color: '#e8edf7' },
+            leaves: { label: { color: '#9ca8c6', fontSize: 11 } },
             data: [{
               name: '{ROLE_NAME}\n胜任力模型',
+              itemStyle: { color: 'rgba(91,140,255,0.18)', borderColor: 'rgba(91,140,255,0.35)' },
               children: [
-                {
-                  name: 'D1 产品思维',
-                  children: [
-                    { name: 'B1.1 需求分析', children: [{ name: 'E1.1.1 能拆解需求' }, { name: 'E1.1.2 优先级判断' }] },
-                    { name: 'B1.2 用户洞察', children: [{ name: 'E1.2.1 用户访谈' }, { name: 'E1.2.2 行为数据分析' }] }
-                  ]
-                },
-                {
-                  name: 'D2 执行力',
-                  children: [
-                    { name: 'B2.1 项目管理', children: [{ name: 'E2.1.1 排期计划' }, { name: 'E2.1.2 风险识别' }] },
-                    { name: 'B2.2 跨部门协作', children: [{ name: 'E2.2.1 推动对齐' }, { name: 'E2.2.2 结果导向' }] }
-                  ]
-                }
+                { name: 'D1 系统与性能直觉', itemStyle: { color: 'rgba(91,140,255,0.14)', borderColor: 'rgba(91,140,255,0.28)' }, children: [
+                  { name: 'B1.1 追问性能瓶颈', children: [{ name: 'profiling/kernel意识' }] },
+                  { name: 'B1.2 系统边界映射', children: [{ name: '通信/显存/带宽意识' }] }
+                ]},
+                { name: 'D2 工程驱动与闭环', itemStyle: { color: 'rgba(33,199,183,0.14)', borderColor: 'rgba(33,199,183,0.26)' }, children: [
+                  { name: 'B2.1 不等spec也能推进', children: [{ name: '补环境/补数据/补验证' }] },
+                  { name: 'B2.2 拉到可运行结果', children: [{ name: '独立debug/主动补位' }] }
+                ]},
+                { name: 'D3 抽象建模与学习迁移', itemStyle: { color: 'rgba(242,185,75,0.14)', borderColor: 'rgba(242,185,75,0.24)' }, children: [
+                  { name: 'B3.1 开放题先建模', children: [{ name: '计算/通信/存储/调度层次' }] },
+                  { name: 'B3.2 做trade-off', children: [{ name: '论文到实现/框架迁移' }] }
+                ]},
+                { name: 'D4 韧性与长期投入', itemStyle: { color: 'rgba(239,107,168,0.14)', borderColor: 'rgba(239,107,168,0.24)' }, children: [
+                  { name: 'B4.1 追根因不绕路', children: [{ name: '攻坚经历/长周期稳定' }] },
+                  { name: 'B4.2 长周期不掉线', children: [{ name: '复盘再启动' }] }
+                ]},
+                { name: 'D5 协作沟通与影响', itemStyle: { color: 'rgba(167,139,250,0.14)', borderColor: 'rgba(167,139,250,0.24)' }, children: [
+                  { name: 'B5.1 建立共同语言', children: [{ name: '跨算法/平台/业务' }] },
+                  { name: 'B5.2 分歧中推动对齐', children: [{ name: 'code review/跨团队' }] }
+                ]},
+                { name: 'D6 方向感与结果标尺', itemStyle: { color: 'rgba(251,146,60,0.14)', borderColor: 'rgba(251,146,60,0.24)' }, children: [
+                  { name: 'B6.1 区分补丁与建设', children: [{ name: '长期思维/可复利' }] },
+                  { name: 'B6.2 质量/效率/成本', children: [{ name: '优化边界感/取舍' }] }
+                ]}
               ]
             }]
           }
@@ -848,6 +869,64 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
         </div>
       </div>
     </section>
+
+    <!-- 【备选】CSS/HTML 能力树 — 超长内容时可滚动，永不截断 -->
+    <details style="margin-top: 0.75rem;">
+      <summary style="cursor:pointer; color: var(--text-muted); font-size: 0.82rem; padding: 0.3rem 0;">
+        📋 备选：CSS/HTML 树（超长时横向滚动）
+      </summary>
+      <div class="competency-tree" style="margin-top: 0.75rem;">
+        <ul>
+          <li>
+            <span class="tree-node root">{ROLE_NAME} 胜任力模型</span>
+            <ul>
+              <li><span class="tree-node d1">D1 系统与性能直觉</span>
+                <ul>
+                  <li><span class="tree-node">B1.1 会主动追问性能、资源与瓶颈</span></li>
+                  <li><span class="tree-node">B1.2 能把软件问题映射到系统边界</span></li>
+                  <li><span class="tree-node evidence">E：profiling/kernel优化/通信显存带宽意识</span></li>
+                </ul>
+              </li>
+              <li><span class="tree-node d2">D2 工程驱动与闭环</span>
+                <ul>
+                  <li><span class="tree-node">B2.1 不等spec完整也能推进</span></li>
+                  <li><span class="tree-node">B2.2 能把方案拉到可运行结果</span></li>
+                  <li><span class="tree-node evidence">E：项目交付/独立debug/主动补位</span></li>
+                </ul>
+              </li>
+              <li><span class="tree-node d3">D3 抽象建模与学习迁移</span>
+                <ul>
+                  <li><span class="tree-node">B3.1 面对开放题先建模</span></li>
+                  <li><span class="tree-node">B3.2 能做trade-off并解释原因</span></li>
+                  <li><span class="tree-node evidence">E：系统设计/论文到实现/框架迁移</span></li>
+                </ul>
+              </li>
+              <li><span class="tree-node d4">D4 韧性与长期投入</span>
+                <ul>
+                  <li><span class="tree-node">B4.1 卡点后继续追根因</span></li>
+                  <li><span class="tree-node">B4.2 长周期任务不掉线</span></li>
+                  <li><span class="tree-node evidence">E：攻坚经历/稳定投入/复盘再启动</span></li>
+                </ul>
+              </li>
+              <li><span class="tree-node d5">D5 协作沟通与影响</span>
+                <ul>
+                  <li><span class="tree-node">B5.1 能与算法/平台/业务建立共同语言</span></li>
+                  <li><span class="tree-node">B5.2 在分歧里推动对齐</span></li>
+                  <li><span class="tree-node evidence">E：code review/接口对接/跨团队推进</span></li>
+                </ul>
+              </li>
+              <li><span class="tree-node d6">D6 方向感与结果标尺</span>
+                <ul>
+                  <li><span class="tree-node">B6.1 能区分短期补丁与长期建设</span></li>
+                  <li><span class="tree-node">B6.2 对质量/效率/成本有判断</span></li>
+                  <li><span class="tree-node evidence">E：技术取舍说明/长期项目偏好/优化边界感</span></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </details>
     
     <!-- 【可选】自测矩阵（三水位对照） -->
     <!-- 仅当用户选择添加自测矩阵功能时包含此节 -->
@@ -976,10 +1055,72 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
 }
 .chart-container {
   min-height: 400px;
+  overflow: auto; /* 安全兜底：ECharts 图表超出容器时允许滚动 */
 }
 @media (max-width: 768px) {
   .chart-toolbar { opacity: 1; }
   .chart-container { min-height: 300px; }
+}
+
+/* 方案A（推荐）：CSS/HTML 能力树 — 永不截断，天然响应式 */
+.competency-tree {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0 0 0.5rem;
+  overflow-x: auto; /* 超长树允许横向滚动 */
+}
+.competency-tree ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 22px;
+  position: relative;
+}
+.competency-tree ul::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 10px;
+  border-left: 1px dashed rgba(130, 160, 255, 0.18);
+}
+.competency-tree li {
+  position: relative;
+  margin: 10px 0;
+}
+.competency-tree li::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 14px;
+  width: 14px;
+  border-top: 1px dashed rgba(130, 160, 255, 0.18);
+}
+.tree-node {
+  display: inline-block;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #e8edf7;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+.tree-node.root {
+  background: rgba(91, 140, 255, 0.12);
+  border-color: rgba(91, 140, 255, 0.30);
+  font-weight: 700;
+  color: #dce7ff;
+}
+.tree-node.d1 { border-color: rgba(91, 140, 255, 0.28); }
+.tree-node.d2 { border-color: rgba(33, 199, 183, 0.26); }
+.tree-node.d3 { border-color: rgba(242, 185, 75, 0.24); }
+.tree-node.d4 { border-color: rgba(239, 107, 168, 0.24); }
+.tree-node.d5 { border-color: rgba(167, 139, 250, 0.24); }
+.tree-node.d6 { border-color: rgba(251, 146, 60, 0.24); }
+.tree-node.evidence {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.05);
+  color: #9ca8c6;
+  font-size: 0.78rem;
 }
 ```
 
@@ -1181,7 +1322,7 @@ function exportChart(chartId, format) {
 - [ ] **四个图表全部存在**：旭日图、矩形树图、散点图、能力树；缺少任何一个 → 必须补充后再输出
 - [ ] **图表实现方式检查**（二选一，均合规）：
   - 方案A（ECharts）：对应容器 id 存在，type 为 sunburst/treemap/scatter/tree，无 value 精确数字，无坐标轴 min/max
-  - 方案B（CSS/HTML）：旭日图用 conic-gradient，矩形树图用 CSS Grid tile，四象限散点图用 SVG 轴线+气泡 —— 均无需任何数值数据；但 ring 扇区颜色与标签色需手工对齐，维护成本高
+  - 方案B（CSS/HTML）：旭日图用 conic-gradient，矩形树图用 CSS Grid tile，四象限散点图用 SVG 轴线+气泡；能力树用 `<ul>` 虚线连接树 —— 均无需任何数值数据；但 ring 扇区颜色与标签色需手工对齐，维护成本高
 - [ ] **图表中无量化数值**：无 value 精确数字、无百分比、无坐标轴刻度 min/max、无 markArea 精确分界线
 
 **ECharts CDN 关联：**
