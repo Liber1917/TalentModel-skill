@@ -355,8 +355,9 @@ metadata:
 - ❌ **禁止使用饼图（pie）**：胜任力维度不是比例分割关系
 - ❌ **禁止省略任何图表**：4个图表必须全部生成，缺少任何一个报告不合格
 - ✅ **只允许**：sunburst（旭日图）、treemap（矩形树图）、scatter（散点图）、tree（能力树）
+- ❌ **图表中禁止使用量化数值**（value/坐标/百分比/轴刻度）：胜任力模型无真实测量数据，图表value只表示相对结构比例，ECharts示例中的数值均为结构占位符；严禁在图表中填写精确数字
 
-> **原因**：大模型生成"胜任力+自评"类内容时，训练数据中高频出现雷达图，导致统计惯性压倒规范要求。以上禁止项是经过测试验证的失败模式，必须硬性约束。
+> **原因**：大模型生成"胜任力+自评"类内容时，训练数据中高频出现雷达图，导致统计惯性压倒规范要求。同时大模型倾向于为图表填写精确数值（权重/百分比/坐标），这是幻觉高发区。以上禁止项是经过测试验证的失败模式，必须硬性约束。
 
 **HTML生成时必须同时提供：**
 1. `{ROLE_NAME}_胜任力模型.html` — 主报告文件
@@ -419,20 +420,26 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
         </div>
         <div id="chart-sunburst" class="chart-container">
           <!-- ECharts 旭日图配置示例（禁止替换为 radar/bar/line/pie）：
+          ⚠️ 注意：value 只表示结构占比（无真实数据），不要写精确数字。
           {
             type: 'sunburst',
             data: [{
-              name: 'D1 维度名', value: 10,
+              name: 'D1 维度名',
               children: [
-                { name: 'B1.1 行为名', value: 4,
+                { name: 'B1.1 行为名',
                   children: [
-                    { name: 'E1.1.1 证据名', value: 1 },
-                    { name: 'E1.1.2 证据名', value: 1 }
+                    { name: 'E1.1.1 证据名' },
+                    { name: 'E1.1.2 证据名' }
                   ]
                 },
-                { name: 'B1.2 行为名', value: 3, children: [...] }
+                { name: 'B1.2 行为名', children: [{ name: 'E1.2.1 证据名' }] }
               ]
-            }, { name: 'D2 维度名', value: 8, children: [...] }],
+            }, {
+              name: 'D2 维度名',
+              children: [
+                { name: 'B2.1 行为名', children: [{ name: 'E2.1.1 证据名' }] }
+              ]
+            }],
             radius: ['15%', '90%'],
             label: { rotate: 'radial' }
           }
@@ -454,25 +461,39 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
         </div>
         <div id="chart-treemap" class="chart-container">
           <!-- ECharts 矩形树图配置示例（禁止替换为 radar/bar/line/pie）：
+          ⚠️ 注意：value 只控制视觉面积比例（无真实数据），不要写精确数字或百分比。
           {
             type: 'treemap',
             data: [
-              { name: 'D1 产品思维 30%', value: 30,
+              { name: 'D1 产品思维',
                 children: [
-                  { name: 'B1.1 需求分析', value: 15 },
-                  { name: 'B1.2 用户洞察', value: 10 },
-                  { name: 'B1.3 方案设计', value: 5 }
+                  { name: 'B1.1 需求分析' },
+                  { name: 'B1.2 用户洞察' },
+                  { name: 'B1.3 方案设计' }
                 ]
               },
-              { name: 'D2 执行力 25%', value: 25,
+              { name: 'D2 执行力',
                 children: [
-                  { name: 'B2.1 项目管理', value: 15 },
-                  { name: 'B2.2 跨部门协作', value: 10 }
+                  { name: 'B2.1 项目管理' },
+                  { name: 'B2.2 跨部门协作' }
                 ]
               },
-              { name: 'D3 技术理解 20%', value: 20, children: [...] },
-              { name: 'D4 商业敏感 15%', value: 15, children: [...] },
-              { name: 'D5 沟通影响 10%', value: 10, children: [...] }
+              { name: 'D3 技术理解',
+                children: [
+                  { name: 'B3.1 技术方案评估' },
+                  { name: 'B3.2 技术风险判断' }
+                ]
+              },
+              { name: 'D4 商业敏感',
+                children: [
+                  { name: 'B4.1 商业逻辑拆解' }
+                ]
+              },
+              { name: 'D5 沟通影响',
+                children: [
+                  { name: 'B5.1 跨团队推动' }
+                ]
+              }
             ],
             label: { formatter: '{b}' },
             levels: [{ itemStyle: { borderWidth: 0 } }]
@@ -504,24 +525,19 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
         </div>
         <div id="chart-scatter" class="chart-container">
           <!-- ECharts 散点图配置示例（禁止替换为 radar/bar/line/pie）：
+          ⚠️ 注意：坐标值只表示相对位置关系（无真实测量数据），禁止写精确数字。
+          散点图展示"成长潜力 vs 当前能力"的两维分布，用气泡大小或颜色区分维度。
           {
             type: 'scatter',
             data: [
-              [3.5, 2.5, 'D1 产品思维', '潜力型'],  // [x=潜力, y=能力, 维度名, 分型名]
-              [4.2, 4.0, 'D2 执行力', '突出型'],
-              [2.8, 3.8, 'D3 技术理解', '平台型'],
-              [3.0, 2.0, 'D4 商业敏感', '达标型'],
-              [4.5, 3.2, 'D5 沟通影响', '突出型']
+              { name: 'D1 产品思维', value: [null, null], itemStyle: { color: '#5470c6' } },
+              { name: 'D2 执行力',     value: [null, null], itemStyle: { color: '#91cc75' } },
+              { name: 'D3 技术理解',   value: [null, null], itemStyle: { color: '#fac858' } },
+              { name: 'D4 商业敏感',   value: [null, null], itemStyle: { color: '#ee6666' } },
+              { name: 'D5 沟通影响',   value: [null, null], itemStyle: { color: '#73c0de' } }
             ],
-            xAxis: { name: '成长潜力', min: 1, max: 5 },
-            yAxis: { name: '当前能力', min: 1, max: 5 },
-            markArea: {
-              silent: true,
-              data: [
-                [{ xAxis: 3, name: '潜力高' }, { xAxis: 5 }],
-                [{ xAxis: 1, name: '潜力低' }, { xAxis: 3 }]
-              ]
-            }
+            xAxis: { name: '成长潜力（相对位置）', type: 'category' },
+            yAxis: { name: '当前能力（相对位置）', type: 'category' }
           }
           -->
         </div>
@@ -945,7 +961,8 @@ function exportChart(chartId, format) {
 - [ ] **矩形树图存在**：`id="chart-treemap"` 且 `type: 'treemap'`（不是 radar/bar/line/pie）
 - [ ] **散点图存在**：`id="chart-scatter"` 且 `type: 'scatter'`（不是 radar/bar/line/pie）
 - [ ] **能力树存在**：`id="chart-tree"` 且 `type: 'tree'`（不是 radar/bar/line/pie）
-- [ ] 四个图表全部生成，缺少任何一个 → 必须补充后再输出
+- [ ] **四个图表全部生成**，缺少任何一个 → 必须补充后再输出
+- [ ] **图表中无量化数值**：ECharts data 中没有 value 精确数字、没有百分比、没有坐标轴刻度 min/max、没有 markArea 精确分界线；散点图坐标用 `[null, null]` 占位
 
 **echarts.min.js 关联：**
 - [ ] `<script src="echarts.min.js">` 存在于 `<head>` 或 `<body>` 底部
@@ -975,6 +992,7 @@ function exportChart(chartId, format) {
 | **大厂偏差** | **验证公司不能全为互联网大厂；Q5 非互联网行业时，大厂占比不超过50%；大厂特有要求降级为证据层** |
 | **先验框架陷阱** | **企业信息采集（Step 3.5）必须在起草维度（Step 4）之前执行；禁止先套框架再找证据支持** |
 | **图表惯性漂移** | **HTML报告必须使用 sunburst/treemap/scatter/tree 四种图表；禁止使用 radar/bar/line/pie；生成后必须按自检清单逐项验证图表类型** |
+| **图表量化幻觉** | **图表ECharts配置中禁止填写精确数值（value/坐标/百分比/轴刻度）；胜任力模型无测量数据，图表只展示相对结构关系；若生成时填写了具体数字→立即清除** |
 
 ---
 
