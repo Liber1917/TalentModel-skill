@@ -21,7 +21,7 @@ compatibility:
   mcp-native: true        # callable as MCP tool if server is configured
 
 allowed-tools:
-  Read:       mandatory   # read SKILL.md, prompts/, templates/
+  Read:       mandatory   # read SKILL.md and asset files
   Write:      mandatory   # write report output
   Bash:       optional    # copy echarts.min.js, run local servers
   WebFetch:   mandatory   # fetch job pages for validation (Step 3.5)
