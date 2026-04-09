@@ -17,13 +17,13 @@ license: MIT
 
 compatibility:
   web-access: required    # Step 3.5 needs web fetch for company validation
-  offline-render: true    # echarts.min.js bundled for HTML export
+  offline-render: true    # CDN ECharts, cached after first load
   mcp-native: true        # callable as MCP tool if server is configured
 
 allowed-tools:
   Read:       mandatory   # read SKILL.md and asset files
   Write:      mandatory   # write report output
-  Bash:       optional    # copy echarts.min.js, run local servers
+  Bash:       optional    # run local servers
   WebFetch:   mandatory   # fetch job pages for validation (Step 3.5)
   WebSearch:  optional    # research company context
 
@@ -231,8 +231,8 @@ metadata:
 #### Q8.5: 图表渲染方式 【仅当选择HTML时】
 ```
 选项：
-  - 完全离线 — 使用内嵌的 echarts.min.js，无需网络（推荐）
-  - 外部CDN — 使用 CDN 加载 ECharts，报告更轻量但需要网络
+  - CDN 加载（推荐）— 使用 jsdelivr CDN，报告保持单文件，初次加载需联网
+  - 内嵌本地 — 直接把 echarts.min.js 内容内联到 HTML（文件更大但完全离线）
 
 提示：完全离线版可分享给无网络环境的同事；CDN 版文件更小、图表版本更新。
 ```
@@ -265,7 +265,7 @@ metadata:
 地区：中国+全球
 验证公司：Google, Microsoft, ByteDance, Alibaba, Tencent...
 输出：HTML报告
-图表渲染：完全离线（内嵌echarts.min.js）
+图表渲染：CDN ECharts（jsdelivr，首次加载需联网）
 语言：中文
 
 【智能校验】
@@ -431,30 +431,24 @@ metadata:
 - ✅ **只允许**：sunburst（旭日图）、treemap（矩形树图）、scatter（散点图）、tree（能力树）
 - ❌ **图表中禁止使用量化数值**（value/坐标/百分比/轴刻度）：胜任力模型无真实测量数据，图表value只表示相对结构比例，ECharts示例中的数值均为结构占位符；严禁在图表中填写精确数字
 
-> **重要：优先使用 CSS/纯HTML 替代方案。** 旭日图（conic-gradient 同心圆）、矩形树图（CSS Grid tile）、四象限散点图（SVG 坐标轴+气泡）均可通过纯 HTML+CSS 实现，完全避免 ECharts 的数据幻觉问题。以下图表方案中均提供"方案A（ECharts）"和"方案B（推荐：CSS/HTML）"两种实现，后者优先。
+> **图表方案：CDN ECharts 为主。** ECharts 通过 jsdelivr CDN 引入，无需分发文件，报告保持单文件。图表数据使用统一占位值（`value: 1`），仅表示结构关系，无量化幻觉风险。
 
 > **原因**：大模型生成"胜任力+自评"类内容时，训练数据中高频出现雷达图，导致统计惯性压倒规范要求。同时大模型倾向于为图表填写精确数值（权重/百分比/坐标），这是幻觉高发区。使用 CSS/纯HTML 方案可以从根本上规避数据幻觉。以上禁止项是经过测试验证的失败模式，必须硬性约束。
 
-**HTML生成时必须同时提供：**
-1. `{ROLE_NAME}_胜任力模型.html` — 主报告文件
-2. `echarts.min.js` — ECharts图表库（必须复制到同一目录）
+**HTML依赖说明：**
+- ECharts 通过 CDN 引入 `<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>`
+- 无需分发 `echarts.min.js`，HTML 保持单文件即可
 
 **操作步骤：**
 ```bash
-# 1. 生成HTML报告
+# 1. 生成HTML报告（ECharts 通过 CDN 加载，无需额外复制文件）
 write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=html_content)
-
-# 2. 复制echarts.min.js到工作目录（关键！）
-# 从Skill的assets目录复制echarts.min.js到用户工作目录
-# 源文件路径: .workbuddy/skills/competency-model/assets/echarts.min.js
-# 目标路径: {workspace}/echarts.min.js
 ```
 
 **使用说明（告知用户）：**
-- HTML报告需要与`echarts.min.js`在同一目录才能正常显示图表
 - 用浏览器打开HTML文件即可查看完整可视化效果
-- 如需分享报告，请同时分享HTML文件和echarts.min.js
-- 报告完全离线可用，无需网络连接
+- 首次打开需要联网（CDN 加载 ECharts），之后可断网使用
+- 报告完全离线可用（ECharts 缓存后）
 - 每个图表区域提供导出按钮，支持导出为 PNG/SVG/JPEG 格式
 
 ---
@@ -929,7 +923,7 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
   <footer>...</footer>
   
   <!-- ECharts + 图表初始化脚本 -->
-  <script src="echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
   <script>...</script>
 </body>
 </html>
@@ -1187,12 +1181,12 @@ function exportChart(chartId, format) {
 - [ ] **四个图表全部存在**：旭日图、矩形树图、散点图、能力树；缺少任何一个 → 必须补充后再输出
 - [ ] **图表实现方式检查**（二选一，均合规）：
   - 方案A（ECharts）：对应容器 id 存在，type 为 sunburst/treemap/scatter/tree，无 value 精确数字，无坐标轴 min/max
-  - 方案B（推荐 CSS/HTML）：旭日图用 conic-gradient，矩形树图用 CSS Grid tile，四象限散点图用 SVG 轴线+气泡 —— 均无需任何数值数据
+  - 方案B（CSS/HTML）：旭日图用 conic-gradient，矩形树图用 CSS Grid tile，四象限散点图用 SVG 轴线+气泡 —— 均无需任何数值数据；但 ring 扇区颜色与标签色需手工对齐，维护成本高
 - [ ] **图表中无量化数值**：无 value 精确数字、无百分比、无坐标轴刻度 min/max、无 markArea 精确分界线
 
-**echarts.min.js 关联：**
-- [ ] `<script src="echarts.min.js">` 存在于 `<head>` 或 `<body>` 底部
-- [ ] echarts.min.js 文件已复制到 HTML 文件同目录
+**ECharts CDN 关联：**
+- [ ] `<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js">` 存在于 `<head>` 或 `<body>` 底部
+- [ ] 若使用方案A（ECharts），value 字段使用统一占位值（如 `1`），不得填写具体数字
 
 **格式规范：**
 - [ ] 无虚假量化权重（不用百分比/分数表达维度重要程度，只用相对"关注重心"）
