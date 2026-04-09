@@ -1,5 +1,24 @@
 ## HTML报告模板规范
 
+> **全局配色标准（必须严格遵循）**
+>
+> 所有图表中，**同一维度编号（D1-D6）必须使用相同的颜色**，不得因图表类型不同而改变。
+>
+> | 维度 | 颜色代码 | 用途 |
+> |:----:|---------|------|
+> | D1 | `#7b8b78` | 橄榄绿 |
+> | D2 | `#a88244` | 土黄 |
+> | D3 | `#89a89b` | 青灰 |
+> | D4 | `#8d6b61` | 砖红 |
+> | D5 | `#64748b` | 蓝灰 |
+> | D6 | `#31526b` | 深蓝 |
+>
+> **使用规则：**
+> - 能力树使用半透明版本：`rgba(hex, 0.14)` 作为背景，`rgba(hex, 0.26)` 作为边框
+> - 若报告只有5个维度，使用 D1-D5 的颜色
+> - CSS `conic-gradient` 中的 rgba 取原色乘以约 0.85 透明度（如 `#7b8b78` → `rgba(123,139,120,0.85)`）
+> - 散点图维度气泡、ECharts 能力树节点均须参照此表，不得使用 ECharts 默认色
+
 生成的HTML必须包含以下结构：
 
 ```html
@@ -266,11 +285,12 @@
           {
             type: 'scatter',
             data: [
-              { name: 'D1 产品思维', value: [null, null], itemStyle: { color: '#5470c6' } },
-              { name: 'D2 执行力',     value: [null, null], itemStyle: { color: '#91cc75' } },
-              { name: 'D3 技术理解',   value: [null, null], itemStyle: { color: '#fac858' } },
-              { name: 'D4 商业敏感',   value: [null, null], itemStyle: { color: '#ee6666' } },
-              { name: 'D5 沟通影响',   value: [null, null], itemStyle: { color: '#73c0de' } }
+              // ⚠️ 配色必须与全局标准一致：D1=#7b8b78 D2=#a88244 D3=#89a89b D4=#8d6b61 D5=#64748b
+              { name: 'D1', value: [null, null], itemStyle: { color: '#7b8b78' } },
+              { name: 'D2', value: [null, null], itemStyle: { color: '#a88244' } },
+              { name: 'D3', value: [null, null], itemStyle: { color: '#89a89b' } },
+              { name: 'D4', value: [null, null], itemStyle: { color: '#8d6b61' } },
+              { name: 'D5', value: [null, null], itemStyle: { color: '#64748b' } }
             ],
             xAxis: { name: '成长潜力（相对位置）', type: 'category' },
             yAxis: { name: '当前能力（相对位置）', type: 'category' }
@@ -300,10 +320,11 @@
               </g>
               <!-- 维度气泡（用小圆点标注各维度的大致分布区域） -->
               <g>
-                <circle cx="545" cy="156" r="10" fill="#89a89b"/>
-                <text x="560" y="160" fill="#45695b" font-size="12">D4 学习敏捷</text>
+                <!-- ⚠️ 配色必须与全局标准一致：D1=#7b8b78 D2=#a88244 D3=#89a89b D4=#8d6b61 D5=#64748b -->
+                <circle cx="545" cy="156" r="10" fill="#8d6b61"/>
+                <text x="560" y="160" fill="#5a3f38" font-size="12">D4</text>
                 <circle cx="580" cy="176" r="10" fill="#a88244"/>
-                <text x="595" y="180" fill="#8a5a2e" font-size="12">D2 主动闭环</text>
+                <text x="595" y="180" fill="#8a5a2e" font-size="12">D2</text>
               </g>
             </svg>
           </div>
@@ -395,29 +416,32 @@
             leaves: { label: { color: '#9ca8c6', fontSize: 11 } },
             data: [{
               name: '{ROLE_NAME}\n胜任力模型',
-              itemStyle: { color: 'rgba(91,140,255,0.18)', borderColor: 'rgba(91,140,255,0.35)' },
+              // 根节点使用D1基准色（半透明）
+              itemStyle: { color: 'rgba(123,139,120,0.18)', borderColor: 'rgba(123,139,120,0.35)' },
               children: [
-                { name: 'D1 系统与性能直觉', itemStyle: { color: 'rgba(91,140,255,0.14)', borderColor: 'rgba(91,140,255,0.28)' }, children: [
+                // ⚠️ 配色必须与全局标准一致：D1=#7b8b78 D2=#a88244 D3=#89a89b D4=#8d6b61 D5=#64748b D6=#31526b
+                // 能力树半透明用法：背景用 rgba(hex, 0.14)，边框用 rgba(hex, 0.26)
+                { name: 'D1', itemStyle: { color: 'rgba(123,139,120,0.14)', borderColor: 'rgba(123,139,120,0.26)' }, children: [
                   { name: 'B1.1 追问性能瓶颈', children: [{ name: 'profiling/kernel意识' }] },
                   { name: 'B1.2 系统边界映射', children: [{ name: '通信/显存/带宽意识' }] }
                 ]},
-                { name: 'D2 工程驱动与闭环', itemStyle: { color: 'rgba(33,199,183,0.14)', borderColor: 'rgba(33,199,183,0.26)' }, children: [
+                { name: 'D2', itemStyle: { color: 'rgba(168,130,68,0.14)', borderColor: 'rgba(168,130,68,0.26)' }, children: [
                   { name: 'B2.1 不等spec也能推进', children: [{ name: '补环境/补数据/补验证' }] },
                   { name: 'B2.2 拉到可运行结果', children: [{ name: '独立debug/主动补位' }] }
                 ]},
-                { name: 'D3 抽象建模与学习迁移', itemStyle: { color: 'rgba(242,185,75,0.14)', borderColor: 'rgba(242,185,75,0.24)' }, children: [
+                { name: 'D3', itemStyle: { color: 'rgba(137,168,155,0.14)', borderColor: 'rgba(137,168,155,0.26)' }, children: [
                   { name: 'B3.1 开放题先建模', children: [{ name: '计算/通信/存储/调度层次' }] },
                   { name: 'B3.2 做trade-off', children: [{ name: '论文到实现/框架迁移' }] }
                 ]},
-                { name: 'D4 韧性与长期投入', itemStyle: { color: 'rgba(239,107,168,0.14)', borderColor: 'rgba(239,107,168,0.24)' }, children: [
+                { name: 'D4', itemStyle: { color: 'rgba(141,107,97,0.14)', borderColor: 'rgba(141,107,97,0.26)' }, children: [
                   { name: 'B4.1 追根因不绕路', children: [{ name: '攻坚经历/长周期稳定' }] },
                   { name: 'B4.2 长周期不掉线', children: [{ name: '复盘再启动' }] }
                 ]},
-                { name: 'D5 协作沟通与影响', itemStyle: { color: 'rgba(167,139,250,0.14)', borderColor: 'rgba(167,139,250,0.24)' }, children: [
+                { name: 'D5', itemStyle: { color: 'rgba(100,116,139,0.14)', borderColor: 'rgba(100,116,139,0.26)' }, children: [
                   { name: 'B5.1 建立共同语言', children: [{ name: '跨算法/平台/业务' }] },
                   { name: 'B5.2 分歧中推动对齐', children: [{ name: 'code review/跨团队' }] }
                 ]},
-                { name: 'D6 方向感与结果标尺', itemStyle: { color: 'rgba(251,146,60,0.14)', borderColor: 'rgba(251,146,60,0.24)' }, children: [
+                { name: 'D6', itemStyle: { color: 'rgba(49,82,107,0.14)', borderColor: 'rgba(49,82,107,0.26)' }, children: [
                   { name: 'B6.1 区分补丁与建设', children: [{ name: '长期思维/可复利' }] },
                   { name: 'B6.2 质量/效率/成本', children: [{ name: '优化边界感/取舍' }] }
                 ]}
