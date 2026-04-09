@@ -62,6 +62,31 @@
     }
     .chart-head h2 { font-size: 15px; margin: 0; }
     .chart-head span { color: var(--muted); font-size: 12px; }
+    .export-btns {
+      display: flex;
+      gap: 6px;
+    }
+    .export-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 12px;
+      border: 1px solid rgba(59,130,246,.22);
+      background: #fff;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--blue);
+      cursor: pointer;
+      transition: all 150ms ease;
+      text-decoration: none;
+      font-family: inherit;
+    }
+    .export-btn:hover {
+      background: rgba(59,130,246,.08);
+      border-color: var(--blue);
+    }
+    .export-btn svg { width: 13px; height: 13px; }
     #chart { width: 100%; height: 480px; }
     .legend {
       display: flex;
@@ -98,8 +123,26 @@
 
     <div class="chart-card">
       <div class="chart-head">
-        <h2>Agent 推荐工作流</h2>
-        <span>理解 → 采样 → 归纳 → 建模 → 输出 → 迭代</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <h2>Agent 推荐工作流</h2>
+          <span style="color:var(--muted);font-size:12px">理解 → 采样 → 归纳 → 建模 → 输出 → 迭代</span>
+        </div>
+        <div class="export-btns">
+          <button class="export-btn" id="btn-svg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            导出 SVG
+          </button>
+          <button class="export-btn" id="btn-png">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            导出 PNG
+          </button>
+        </div>
       </div>
       <div id="chart"></div>
       <div class="legend">
@@ -288,6 +331,57 @@
     });
 
     window.addEventListener('resize', () => chart.resize());
+
+    /* ── 导出功能 ────────────────────────────────────────────── */
+    document.getElementById('btn-svg').addEventListener('click', () => {
+      const svgEl = document.querySelector('#chart > svg');
+      if (!svgEl) { alert('SVG 尚未渲染，请稍候'); return; }
+      const serializer = new XMLSerializer();
+      let svgStr = serializer.serializeToString(svgEl);
+
+      // 添加字体声明避免中文乱码（嵌入系统字体）
+      const defsTag = svgStr.indexOf('<defs') !== -1 ? '' : '<defs><style>@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC&amp;display=swap");</style></defs>';
+      svgStr = svgStr.replace('<svg', defsTag + '<svg style="font-family: \'Noto Sans SC\', \'PingFang SC\', \'Microsoft YaHei\', sans-serif;"');
+
+      const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'agent-workflow.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('btn-png').addEventListener('click', () => {
+      const svgEl = document.querySelector('#chart > svg');
+      if (!svgEl) { alert('SVG 尚未渲染，请稍候'); return; }
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(svgEl);
+      const svgWidth = svgEl.getAttribute('width') || 1200;
+      const svgHeight = svgEl.getAttribute('height') || 480;
+      const scale = 2; // 2x 分辨率
+
+      const canvas = document.createElement('canvas');
+      canvas.width = svgWidth * scale;
+      canvas.height = svgHeight * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(scale, scale);
+
+      const img = new Image();
+      const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(blob => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'agent-workflow.png';
+          a.click();
+        });
+      };
+      img.src = url;
+    });
   </script>
 </body>
 </html>
