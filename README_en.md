@@ -2,6 +2,8 @@
 
 > 🎯 **Job Competency Modeling Tool** — Through an interactive config wizard, build a 3-tier competency model (Core Dimensions → Observable Behaviors → Role Evidence) based on candidate persona rather than a skills checklist. Outputs HTML reports with 4 visualizations.
 
+📄 **中文版:** [README.md](README.md)
+
 ---
 
 ## ⚡ For Agents & LLMs

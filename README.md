@@ -2,6 +2,8 @@
 
 > 🎯 **岗位胜任力建模工具** — 通过交互式配置向导，基于候选人画像而非技能清单，生成三层结构（核心维度→可观察行为→角色证据）的胜任力模型报告。
 
+📄 **English version:** [README_en.md](README_en.md)
+
 ---
 
 ## ⚡ For Agents & LLMs
