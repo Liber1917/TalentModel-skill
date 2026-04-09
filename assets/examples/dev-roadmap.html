@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TalentModel Skill — 开发路线图 × Agent 工作流</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #3b82f6;
+      --green: #10b981;
+      --purple: #8b5cf6;
+      --amber: #f59e0b;
+      --rose: #ec4899;
+      --red: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px 36px;
+    }
+    .hero {
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(59,130,246,.14);
+      border-radius: 18px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 24px rgba(15,23,42,.06);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .hero-icon {
+      font-size: 36px;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .hero-text h1 {
+      font-size: 20px;
+      margin: 0 0 4px;
+      line-height: 1.3;
+    }
+    .hero-text p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.65;
+    }
+    .chart-card {
+      background: var(--card);
+      border: 1px solid rgba(59,130,246,.14);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(15,23,42,.06);
+      overflow: hidden;
+    }
+    .chart-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(59,130,246,.10);
+      background: rgba(59,130,246,.04);
+    }
+    .chart-head h2 {
+      font-size: 15px;
+      margin: 0;
+    }
+    .chart-head span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    #chart { width: 100%; height: 540px; }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 18px 16px;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid rgba(59,130,246,.12);
+      background: #fff;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    @media (max-width: 900px) {
+      #chart { height: 860px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-icon">🎯</div>
+      <div class="hero-text">
+        <h1>TalentModel Skill — 版本演进路线图 × Agent 工作流</h1>
+        <p>左列：项目从 v1.0.0 到 v1.3.1 的关键版本节点与核心改进。右列：Agent 实际执行 Skill 时的推荐工作路径。适合放在 GitHub README 靠前位置或 docs 页面展示。</p>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h2>版本演进 × Agent 工作流</h2>
+        <span>左：版本节点（从 v1.0.0 到 v1.3.1） · 右：Agent 执行路径（理解→采样→归纳→建模→输出→迭代）</span>
+      </div>
+      <div id="chart"></div>
+      <div class="legend">
+        <span class="tag"><i class="dot" style="background:#3b82f6"></i>版本节点</span>
+        <span class="tag"><i class="dot" style="background:#10b981"></i>采样与信号</span>
+        <span class="tag"><i class="dot" style="background:#8b5cf6"></i>建模与映射</span>
+        <span class="tag"><i class="dot" style="background:#f59e0b"></i>输出与图表</span>
+        <span class="tag"><i class="dot" style="background:#ec4899"></i>用户反馈迭代</span>
+        <span class="tag"><i class="dot" style="background:#94a3b8"></i>辅助/测试</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chart = echarts.init(document.getElementById('chart'), null, { renderer: 'svg' });
+
+    /* ─────────────────────────────────────────────────────────────
+       节点设计说明：
+       · 左侧版本路线图（x: 50–270）：垂直排列，带竖线连接
+       · 右侧 Agent 工作流（x: 340–1200）：两行曲折（S形），紧凑排列
+       · 中心分隔线：x=308 竖虚线
+    ───────────────────────────────────────────────────────────── */
+
+    const nodes = [
+      /* ── 左侧：版本演进路线图 ──────────────────────────────── */
+      {
+        name: 'v1.0.0\n2024',
+        x: 50, y: 70,
+        c: '#3b82f6', s: 68, d: 'v1.0.0 Initial Commit\n岗位胜任力建模工具基础框架 · Skill 规范兼容 · ECharts 图表依赖引入',
+        rawLabel: 'v1.0.0 · 2024',
+        isRoadmap: true
+      },
+      {
+        name: 'v1.1.0\n图表约束',
+        x: 50, y: 170,
+        c: '#3b82f6', s: 78, d: 'v1.1.0 图表规范强化\nECharts 图表禁止/允许类型明确化 · 禁止定量数据幻觉\nBEI 行为事件访谈法引用 · 官网验证链接章节',
+        rawLabel: 'v1.1.0 · 图表约束',
+        isRoadmap: true
+      },
+      {
+        name: 'v1.2.0\nMECE增强',
+        x: 50, y: 280,
+        c: '#3b82f6', s: 78, d: 'v1.2.0 MECE 建模增强\nMECE 批评分析 · 人才分型象限 · 自检矩阵\nCDN 方案引入 · CSS树备选 · test_cases TC-001~010',
+        rawLabel: 'v1.2.0 · MECE增强',
+        isRoadmap: true
+      },
+      {
+        name: 'v1.3.0\n封堵幻觉',
+        x: 50, y: 390,
+        c: '#e53e3e', s: 78, d: 'v1.3.0 封堵关键 hallucination 路径\nHTML-only 输出锁定 · 强制中间产物验证（信号归纳表 → 维度扫描 → 报告自检）\n防幻觉约束体系 · 维度黑名单扫描 · URL WebFetch 硬约束',
+        rawLabel: 'v1.3.0 · 封堵幻觉',
+        isRoadmap: true
+      },
+      {
+        name: 'v1.3.1\n质量打磨',
+        x: 50, y: 490,
+        c: '#10b981', s: 78, d: 'v1.3.1 图表质量专项\n旭日图文字堆叠修复（强制概括 · 能力树完整展开）\n全局配色一致性（D1–D6 标准色统一）· README 中英双语互链',
+        rawLabel: 'v1.3.1 · 质量打磨',
+        isRoadmap: true
+      },
+
+      /* ── 右侧：Agent 工作流（第1行从左到右）─────────────── */
+      {
+        name: '读\nSKILL.md',
+        x: 355, y: 80, c: '#3b82f6', s: 62,
+        d: '读取 SKILL.md，锁定硬约束：先企业分布探索、先信号归纳表、只输出 HTML、只用 4 类图表。'
+      },
+      {
+        name: '企业分布\n探索',
+        x: 475, y: 80, c: '#3b82f6', s: 62,
+        d: '先确认目标岗位工程师分布在互联网 / 云平台 / 智能制造等不同企业类型中，避免样本单一。'
+      },
+      {
+        name: 'Q1-Q10\n配置向导',
+        x: 600, y: 80, c: '#3b82f6', s: 64,
+        d: '完成岗位、级别、场景、边界、行业、地区、验证公司、语言与特殊要求配置。'
+      },
+      {
+        name: '扩展验证\n公司池',
+        x: 725, y: 80, c: '#10b981', s: 64,
+        d: '补充公开存在目标岗位表述的公司，优先校招 / 实习 / early talent 官方页面。'
+      },
+      {
+        name: '官方入口\n采样',
+        x: 855, y: 80, c: '#10b981', s: 64,
+        d: '优先使用校招/实习/official careers 页面，WebFetch 验证 URL 有效性，禁止猜测链接。'
+      },
+      {
+        name: '原始信号\n归纳表',
+        x: 985, y: 80, c: '#10b981', s: 68,
+        d: '整理招聘信号，逐条判断哪些能上升为稳定特质，哪些应降级为行为或证据。≥15行表格输出。'
+      },
+
+      /* ── 工作流转折（箭头向下） ─────────────────────────── */
+      {
+        name: '提炼\n6个维度',
+        x: 1080, y: 185, c: '#8b5cf6', s: 64,
+        d: '从跨企业共性中提炼 D1-D6 一级维度，禁止把技术词(K8s/CUDA)放在顶层；参考历史高频维度仅作校验。'
+      },
+      {
+        name: '构建\nB层+E层',
+        x: 950, y: 185, c: '#8b5cf6', s: 64,
+        d: '保留三层结构：核心维度(D) → 可观察行为(B) → 角色证据(E)。行为层需可观察，证据层需具体。'
+      },
+      {
+        name: 'MECE\n校验',
+        x: 820, y: 185, c: '#8b5cf6', s: 56,
+        d: '删除重叠项，保留跨类型共性，降级大厂专属特征和短周期技术热词。'
+      },
+      {
+        name: '生成\nHTML报告',
+        x: 680, y: 185, c: '#f59e0b', s: 64,
+        d: '输出 8 部分 HTML 报告，并生成 sunburst / treemap / scatter / tree 四类图表；配色遵循 D1-D6 标准色。'
+      },
+      {
+        name: '图表修正\n& 自检',
+        x: 530, y: 185, c: '#f59e0b', s: 66,
+        d: '旭日图：D1名≤8字符，三级折叠；能力树：D1-D2-D3 完整展开；配色自检：全局一致性。'
+      },
+      {
+        name: '视觉统一\n配色收敛',
+        x: 380, y: 185, c: '#ec4899', s: 66,
+        d: '统一配色、卡片层级与图表主题；配色：D1=#7b8b78 D2=#a88244 D3=#89a89b D4=#8d6b61 D5=#64748b D6=#31526b'
+      },
+
+      /* ── 最终节点 ───────────────────────────────────────── */
+      {
+        name: '✓ 交付\nHTML报告',
+        x: 700, y: 310, c: '#10b981', s: 78,
+        d: '最终可交付版本。包含：①人才画像全景(旭日图) ②能力对比(矩形树图) ③人才分型(散点图) ④完整结构(能力树)。'
+      },
+
+      /* ── 测试辅助节点 ───────────────────────────────────── */
+      {
+        name: 'test_cases\n自动化',
+        x: 1120, y: 80, c: '#94a3b8', s: 64,
+        d: 'TC-001~010 自动化测试用例，覆盖校招/社招/不同岗位类型；run_new_flow_test.py 批量验证。'
+      },
+      {
+        name: '验证公司\n参考库',
+        x: 1200, y: 185, c: '#94a3b8', s: 64,
+        d: '按企业类型分类的验证公司参考库：互联网 / 云平台 / 智能制造 / 外企，避免样本单一。'
+      },
+    ];
+
+    /* ─────────────────────────────────────────────────────────────
+       连接线：
+       · 左侧竖线：版本之间 + 版本与右侧连接
+       · 右侧：S形曲折工作流
+    ───────────────────────────────────────────────────────────── */
+    const links = [
+      /* 左侧竖线（版本演进） */
+      { source: 'v1.0.0\n2024',        target: 'v1.1.0\n图表约束', lineStyle: { color: '#3b82f6', width: 2, type: 'solid' } },
+      { source: 'v1.1.0\n图表约束',    target: 'v1.2.0\nMECE增强',   lineStyle: { color: '#3b82f6', width: 2, type: 'solid' } },
+      { source: 'v1.2.0\nMECE增强',    target: 'v1.3.0\n封堵幻觉',   lineStyle: { color: '#3b82f6', width: 2, type: 'solid' } },
+      { source: 'v1.3.0\n封堵幻觉',     target: 'v1.3.1\n质量打磨',   lineStyle: { color: '#3b82f6', width: 2, type: 'solid' } },
+
+      /* 版本 v1.3.1 向右引出工作流起点 */
+      { source: 'v1.3.1\n质量打磨',  target: '读\nSKILL.md',
+        lineStyle: { color: '#94a3b8', width: 1.5, type: 'dashed', curveness: 0.3 } },
+
+      /* 工作流第1行（从左到右） */
+      { source: '读\nSKILL.md',       target: '企业分布\n探索' },
+      { source: '企业分布\n探索',     target: 'Q1-Q10\n配置向导' },
+      { source: 'Q1-Q10\n配置向导',  target: '扩展验证\n公司池' },
+      { source: '扩展验证\n公司池',   target: '官方入口\n采样' },
+      { source: '官方入口\n采样',     target: '原始信号\n归纳表' },
+
+      /* 转折：第1行末尾 → 第2行进方向 */
+      { source: '原始信号\n归纳表',   target: '提炼\n6个维度',
+        lineStyle: { color: '#10b981', width: 2, curveness: -0.2 } },
+
+      /* 工作流第2行（从右到左） */
+      { source: '提炼\n6个维度',      target: '构建\nB层+E层' },
+      { source: '构建\nB层+E层',      target: 'MECE\n校验' },
+      { source: 'MECE\n校验',          target: '生成\nHTML报告' },
+      { source: '生成\nHTML报告',     target: '图表修正\n& 自检' },
+      { source: '图表修正\n& 自检',   target: '视觉统一\n配色收敛' },
+
+      /* 转折：第2行进方向 → 最终节点 */
+      { source: '视觉统一\n配色收敛',  target: '✓ 交付\nHTML报告',
+        lineStyle: { color: '#ec4899', width: 2, curveness: -0.2 } },
+
+      /* 辅助支线 */
+      { source: '扩展验证\n公司池',   target: 'test_cases\n自动化',
+        lineStyle: { color: '#94a3b8', width: 1.5, type: 'dashed', curveness: 0.2 } },
+      { source: 'test_cases\n自动化', target: '验证公司\n参考库' },
+      { source: '验证公司\n参考库',   target: '官方入口\n采样',
+        lineStyle: { color: '#94a3b8', width: 1.5, type: 'dashed', curveness: 0.15 } },
+      { source: 'MECE\n校验',          target: '✓ 交付\nHTML报告',
+        lineStyle: { color: '#8b5cf6', width: 1.5, type: 'dashed', curveness: 0.25 } },
+    ];
+
+    chart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'item',
+        confine: true,
+        backgroundColor: '#ffffff',
+        borderColor: '#93c5fd',
+        borderWidth: 1,
+        textStyle: {
+          color: '#0f172a',
+          fontFamily: 'PingFang SC, Microsoft YaHei, system-ui, sans-serif',
+          lineHeight: 20
+        },
+        formatter: params => {
+          if (params.dataType === 'edge') return '';
+          const d = params.data.d || '';
+          const label = (params.data.rawLabel || params.data.name).replace(/\n/g, ' ');
+          return `<div style="max-width:260px;font-size:12px">
+            <div style="font-weight:700;margin-bottom:4px;font-size:13px">${label}</div>
+            <div style="color:#475569;white-space:pre-line">${d}</div>
+          </div>`;
+        }
+      },
+      series: [{
+        type: 'graph',
+        layout: 'none',
+        coordinateSystem: null,
+        roam: false,
+        edgeSymbol: ['none', 'arrow'],
+        edgeSymbolSize: [0, 7],
+        data: nodes.map(n => ({
+          ...n,
+          symbol: n.isRoadmap ? 'circle' : 'roundRect',
+          symbolSize: n.isRoadmap ? [n.s, n.s] : [n.s, 48],
+          itemStyle: {
+            color: n.c,
+            borderColor: n.isRoadmap ? '#fff' : 'rgba(255,255,255,0.7)',
+            borderWidth: n.isRoadmap ? 3 : 2,
+            shadowBlur: 10,
+            shadowColor: 'rgba(15,23,42,0.10)'
+          },
+          label: {
+            show: true,
+            color: '#fff',
+            fontSize: n.isRoadmap ? 11 : 11,
+            fontWeight: '700',
+            lineHeight: 15,
+            formatter: n.name
+          }
+        })),
+        links,
+        lineStyle: {
+          color: '#94a3b8',
+          width: 1.8,
+          curveness: 0.1,
+          opacity: 0.8
+        },
+        emphasis: {
+          focus: 'adjacency',
+          lineStyle: { width: 3, color: '#3b82f6' }
+        }
+      }],
+      /* ── 叠加层：分隔线 & 区域标注 ─────────────────────── */
+      graphic: [
+        /* 左区域标签：版本演进 */
+        {
+          type: 'group',
+          left: 40, top: 14,
+          children: [{
+            type: 'text',
+            style: {
+              text: '📌 版本演进路线图',
+              fill: '#3b82f6',
+              font: 'bold 12px PingFang SC, Microsoft YaHei, system-ui, sans-serif'
+            }
+          }]
+        },
+        /* 右区域标签：Agent 工作流 */
+        {
+          type: 'group',
+          left: 620, top: 14,
+          children: [{
+            type: 'text',
+            style: {
+              text: '🤖 Agent 推荐工作流',
+              fill: '#64748b',
+              font: '12px PingFang SC, Microsoft YaHei, system-ui, sans-serif'
+            }
+          }]
+        },
+        /* 竖直分隔线 */
+        {
+          type: 'line',
+          shape: { x1: 308, y1: 30, x2: 308, y2: 540 },
+          style: { stroke: '#cbd5e1', lineWidth: 1, lineDash: [4, 4] }
+        },
+        /* 版本竖线（节点之间的连接用竖线视觉化） */
+        {
+          type: 'line',
+          shape: { x1: 84, y1: 104, x2: 84, y2: 170 },
+          style: { stroke: '#3b82f6', lineWidth: 2, opacity: 0.6 }
+        },
+        {
+          type: 'line',
+          shape: { x1: 84, y1: 204, x2: 84, y2: 280 },
+          style: { stroke: '#3b82f6', lineWidth: 2, opacity: 0.6 }
+        },
+        {
+          type: 'line',
+          shape: { x1: 84, y1: 314, x2: 84, y2: 390 },
+          style: { stroke: '#3b82f6', lineWidth: 2, opacity: 0.6 }
+        },
+        {
+          type: 'line',
+          shape: { x1: 84, y1: 434, x2: 84, y2: 490 },
+          style: { stroke: '#10b981', lineWidth: 2, opacity: 0.5 }
+        },
+        /* 箭头：版本向工作流引出 */
+        {
+          type: 'line',
+          shape: { x1: 133, y1: 524, x2: 320, y2: 524 },
+          style: { stroke: '#94a3b8', lineWidth: 1.5, lineDash: [3, 3] }
+        },
+        {
+          type: 'polygon',
+          shape: { points: [[320, 524], [308, 519], [308, 529]] },
+          style: { fill: '#94a3b8' }
+        },
+      ]
+    });
+
+    window.addEventListener('resize', () => chart.resize());
+  </script>
+</body>
+</html>

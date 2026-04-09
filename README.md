@@ -6,6 +6,23 @@
 
 ---
 
+## 🗺️ 版本演进 × Agent 工作流
+
+> 📌 **版本路线图**（左列）：项目从 v1.0.0 到 v1.3.1 的关键版本节点与核心改进  
+> 🤖 **Agent 工作流**（右列）：推荐执行路径，从读 SKILL.md → 生成并迭代 HTML 报告
+
+**在线预览：** [assets/examples/dev-roadmap.html](assets/examples/dev-roadmap.html)
+
+[![版本演进 × Agent 工作流](https://img.shields.io/badge/预览-开发路线图-blue?style=flat-square)](assets/examples/dev-roadmap.html)
+
+<!--
+  GitHub README 不执行 ECharts 脚本，请访问上方 dev-roadmap.html 在线预览完整交互图表。
+  截图备选（请替换为实际截图路径）：
+  ![开发路线图](assets/examples/dev-roadmap-screenshot.png)
+-->
+
+---
+
 ## ⚡ For Agents & LLMs
 
 > **Don't read this README. Load `SKILL.md` instead.**
@@ -66,7 +83,8 @@ TalentModel-skill/
 │   ├── config_template.txt          # 配置模板
 │   └── examples/                    # 示例文件
 │       ├── ai_infra_campus.txt      # 示例对话输出
-│       └── sunburst-comparison*.html # 图表方案对比示例
+│       ├── sunburst-comparison*.html # 图表方案对比示例
+│       └── dev-roadmap.html          # 版本演进路线图 × Agent 工作流
 └── references/                      # 参考文档（按需加载）
     ├── html_template.md              # HTML 报告模板（含 CSS/JS）
     ├── enterprise_reference.md       # 按类型分类的验证公司参考列表
@@ -277,7 +295,8 @@ TalentModel-skill/
 │   ├── config_template.txt          # 配置模板
 │   └── examples/                    # 示例文件
 │       ├── ai_infra_campus.txt      # 示例对话输出
-│       └── sunburst-comparison*.html # 图表方案对比示例
+│       ├── sunburst-comparison*.html # 图表方案对比示例
+│       └── dev-roadmap.html          # 版本演进路线图 × Agent 工作流
 └── references/                     # 参考文档（按需加载）
     ├── html_template.md              # HTML 报告模板（含 CSS/JS）
     ├── enterprise_reference.md        # 按类型分类的验证公司参考列表
