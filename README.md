@@ -4,6 +4,65 @@
 
 ---
 
+## ⚡ For Agents & LLMs
+
+> **Don't read this README. Load `SKILL.md` instead.**
+>
+> `SKILL.md` is the authoritative entry point. This file is human-facing documentation.
+
+### How to use this skill
+
+**Entry point:** `SKILL.md`
+
+**Minimal invocation (chat):**
+```
+Use the TalentModel-skill. Target role: [岗位名称], Level: [校招/实习/资深/管理], Scenario: [招聘/面试/晋升], Companies: [公司A, 公司B, ...]
+```
+
+**Required config:**
+| Parameter | Values | Notes |
+|-----------|--------|-------|
+| `ROLE_NAME` | any string | e.g. "AI Infra工程师" |
+| `TALENT_LEVEL` | `校招` / `实习` / `资深专家` / `管理者` | |
+| `USE_CASE` | `招聘筛选` / `面试设计` / `晋升评估` | |
+| `VALIDATION_COMPANIES` | 3–8 company names | Mix of types (big tech + vertical + traditional). See `test_cases/ENTERPRISE_REFERENCE.md` for valid options. |
+
+**Optional config:**
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `OUTPUT_FORMAT` | `html` | HTML report with 4 charts |
+| `SELF_CHECK_MATRIX` | `false` | 3-tier self-assessment table |
+| `CHART_RENDER` | `offline` | echarts bundled locally |
+
+**Key constraints you must follow:**
+- **No radar/bar/line/pie charts.** Only `sunburst`, `treemap`, `scatter`, `tree`.
+- **No quantitative values in charts.** No `value:` numbers, no axis `min/max`, no percentages — competence models have no measurement data.
+- **3-level structure is mandatory.** Dimension → Observable Behavior → Evidence. Never skip levels or collapse them.
+- **Verify before reporting.** Check the post-generation checklist in `SKILL.md` before returning the report.
+
+**File layout:**
+```
+TalentModel-skill/
+├── SKILL.md                        # ← Load this
+├── test_cases/
+│   ├── TEST_CASES.md               # Validation test suite
+│   └── ENTERPRISE_REFERENCE.md      # Valid company list by type
+├── prompts/
+│   ├── config_wizard.md
+│   └── report_builder.md
+└── templates/
+    └── report.html
+```
+
+**Raw content URLs (fetch directly):**
+- SKILL.md: `https://raw.githubusercontent.com/Liber1917/TalentModel-skill/master/SKILL.md`
+- TEST_CASES: `https://raw.githubusercontent.com/Liber1917/TalentModel-skill/master/test_cases/TEST_CASES.md`
+- ENTERPRISE_REFERENCE: `https://raw.githubusercontent.com/Liber1917/TalentModel-skill/master/test_cases/ENTERPRISE_REFERENCE.md`
+
+---
+
+
+
 ## 快速开始
 
 ### 下载
