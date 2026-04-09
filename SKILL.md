@@ -39,7 +39,7 @@ constraints:
   structure: three-level         # Dimension → Behavior → Evidence
 
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   category: "hr"
   emoji: "🎯"
   author: "Liber1917"
@@ -75,6 +75,18 @@ metadata:
 - ✅ **社招/晋升评估场景**才允许使用5年+ JD，此时维度应以"当前交付能力"为核心
 
 > **原因**：校招与社招的核心差异是"用人标准"而非"技能清单"。用社招JD反推校招是极高发的失败模式，必须硬性约束。
+
+**技术词降级逻辑（硬约束）：** 在起草维度时，以下类型的技术词**一律降为证据层，禁止升为一级维度**：
+
+| 技术词类型 | 示例 | 降级原因 | 正确落点 |
+|-----------|------|---------|---------|
+| 规模词 | 万卡集群、EB级存储、3万卡集群 | 说明场景复杂度上限，不是人才特质 | 三级证据 |
+| 芯片/硬件栈 | 昇腾、昆仑芯、Hunyuan、昇思 | 业务边界，不是本质 | 三级证据 |
+| 专业面词汇 | HPC、高性能计算、数据库、云网络、AI框架 | 专业承载面，应落在行为层 | 二级行为或三级证据 |
+| 工具/语言 | Python、Go、CUDA、K8s | 执行工具，不是判断依据 | 三级证据 |
+| 项目标签 | 顶尖人才项目、技术管培生 | 强化期望水位，不代替基本素质 | 证据层附加说明 |
+
+> **核心原则**："会什么工具"和"是什么样的人"必须分开。前者留在证据层，后者才进入一级维度。这一逻辑必须在 HTML 报告中有显式的「降级说明」节（参考 Step 8 扬弃反思的「弃」部分），不得省略。
 
 ---
 
@@ -327,6 +339,14 @@ metadata:
 
 **禁止**：不要用 JD bullet points 直接组装模型。
 
+> ⚠️ **为什么不能直接照抄 JD**
+>
+> 头部公司在具体岗位页里会出现万卡集群、昇腾、昆仑芯、容器、云网络、SQL 引擎、通信算子、EB 级存储等强场景词汇。这些词汇能说明岗位的**上限与复杂度边界**，但不能直接替代"这个公司真正想识别什么样的人"。
+>
+> 例如：JD 说"有 CUDA 优化经验"是岗位要求，但候选人的"在模糊和高复杂度环境里保持高目标、自驱推进"才是胜任力维度。前者应在证据层，后者才是维度。
+>
+> **只有跨公司稳定出现的人才特质**，才进入一级维度；**只有个别公司强调且强依赖技术栈的内容**，一律下沉到证据层。
+
 **优先顺序：**
 1. 官方校招页面
 2. 官方实习页面
@@ -385,15 +405,16 @@ metadata:
 
 ### Step 9: 生成输出
 
-**必须包含的7个部分：**
+**必须包含的8个部分：**
 
-1. **一句话候选人画像** — "这个角色真正想找什么样的人？"
-2. **一级胜任力维度** — 最终确定的6个MECE维度
-3. **维度定义** — 含义与重要性
-4. **可观察行为** — 每个维度下的行为表现
-5. **角色证据** — 该角色的具体验证点
-6. **验证结论** — 多元企业信息采集的发现与调整（含"仅大厂特有"的降级说明）
-7. **适用范围说明** — 哪里适用，哪里不要过度延伸
+1. **一句话候选人画像** — "这个角色真正想找什么样的人？" + 元信息标签（岗位/级别/场景/地区/风格）
+2. **企业分布探索结论** — 在建模前完成的市场企业分布判断，说明验证公司的选取逻辑
+3. **原始信号归纳表** — 多元企业 JD 中的信号词提炼，含跨类型稳定性判断（→进入维度 或 →降级为证据）
+4. **六个 MECE 一级胜任力维度** — 每个维度含定义、可观察行为（二级）、角色证据（三级）
+5. **四类可视化结构图** — 旭日图、矩形树图、散点图/四象限、人才树（CSS方案优先）
+6. **验证结论与降级说明** — 扬弃反思：「扬」保留的核心内容 + 「弃」降级的技术词及原因（**不得省略，即使无降级内容也需说明**）
+7. **官方验证链接卡片** — 每张卡片含"检验点"说明，标注入口类型（校招/实习/社招/上限参照）
+8. **适用范围说明** — 适用场景 + 不宜外推的边界
 
 **如果是HTML格式，额外要求：**
 - 单文件、可本地运行
@@ -410,7 +431,9 @@ metadata:
 - ✅ **只允许**：sunburst（旭日图）、treemap（矩形树图）、scatter（散点图）、tree（能力树）
 - ❌ **图表中禁止使用量化数值**（value/坐标/百分比/轴刻度）：胜任力模型无真实测量数据，图表value只表示相对结构比例，ECharts示例中的数值均为结构占位符；严禁在图表中填写精确数字
 
-> **原因**：大模型生成"胜任力+自评"类内容时，训练数据中高频出现雷达图，导致统计惯性压倒规范要求。同时大模型倾向于为图表填写精确数值（权重/百分比/坐标），这是幻觉高发区。以上禁止项是经过测试验证的失败模式，必须硬性约束。
+> **重要：优先使用 CSS/纯HTML 替代方案。** 旭日图（conic-gradient 同心圆）、矩形树图（CSS Grid tile）、四象限散点图（SVG 坐标轴+气泡）均可通过纯 HTML+CSS 实现，完全避免 ECharts 的数据幻觉问题。以下图表方案中均提供"方案A（ECharts）"和"方案B（推荐：CSS/HTML）"两种实现，后者优先。
+
+> **原因**：大模型生成"胜任力+自评"类内容时，训练数据中高频出现雷达图，导致统计惯性压倒规范要求。同时大模型倾向于为图表填写精确数值（权重/百分比/坐标），这是幻觉高发区。使用 CSS/纯HTML 方案可以从根本上规避数据幻觉。以上禁止项是经过测试验证的失败模式，必须硬性约束。
 
 **HTML生成时必须同时提供：**
 1. `{ROLE_NAME}_胜任力模型.html` — 主报告文件
@@ -472,7 +495,7 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
           <button class="chart-export-btn" onclick="exportChart('chart-sunburst', 'svg')" title="导出SVG">SVG</button>
         </div>
         <div id="chart-sunburst" class="chart-container">
-          <!-- ECharts 旭日图配置示例（禁止替换为 radar/bar/line/pie）：
+          <!-- 方案A：ECharts 旭日图（无 value 精确数字，纯结构占位）：
           ⚠️ 注意：value 只表示结构占比（无真实数据），不要写精确数字。
           {
             type: 'sunburst',
@@ -497,6 +520,52 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
             label: { rotate: 'radial' }
           }
           -->
+
+          <!-- 方案B（推荐）：CSS conic-gradient 旭日图 — 无需 ECharts，完全避免 value 数据问题。
+          用 CSS conic-gradient 绘制同心圆环，用 ring-chip 标注各维度名称。
+
+          HTML:
+          <div class="sunburst-stage">
+            <div class="ring outer"></div>
+            <div class="ring middle"></div>
+            <div class="ring inner"></div>
+            <div class="sun-center">
+              <strong>候选人画像</strong>
+              <span>维度 → 行为 → 证据</span>
+            </div>
+            <div class="ring-labels">
+              <div class="ring-chip" style="top:18px;left:50%;transform:translateX(-50%)">D1 方向与技术标尺</div>
+              <div class="ring-chip" style="top:86px;right:52px">D2 内驱与主动闭环</div>
+              <div class="ring-chip" style="bottom:104px;right:38px">D3 韧性与稳定推进</div>
+              <div class="ring-chip" style="bottom:18px;left:50%;transform:translateX(-50%)">D4 学习敏捷</div>
+              <div class="ring-chip" style="bottom:104px;left:38px">D5 工程基础</div>
+              <div class="ring-chip" style="top:86px;left:52px">D6 协作与交付</div>
+            </div>
+          </div>
+          <div class="sun-legend">
+            <div class="legend-item"><span class="dot" style="background:#7b8b78"></span><span><strong>D1</strong>：质量标尺、性能意识</span></div>
+            <div class="legend-item"><span class="dot" style="background:#a88244"></span><span><strong>D2</strong>：主动拆解、闭环推进</span></div>
+            <div class="legend-item"><span class="dot" style="background:#89a89b"></span><span><strong>D3</strong>：回退恢复、持续试验</span></div>
+            <div class="legend-item"><span class="dot" style="background:#8d6b61"></span><span><strong>D4</strong>：跨域学习、抽象迁移</span></div>
+            <div class="legend-item"><span class="dot" style="background:#64748b"></span><span><strong>D5</strong>：CS 基础、系统判断</span></div>
+            <div class="legend-item"><span class="dot" style="background:#31526b"></span><span><strong>D6</strong>：沟通清晰、文档测试</span></div>
+          </div>
+
+          CSS:
+          .sunburst-stage{position:relative;height:420px;display:flex;align-items:center;justify-content:center}
+          .ring{position:absolute;border-radius:50%;mask:radial-gradient(circle,transparent 0 57%,#000 57% 100%);-webkit-mask:radial-gradient(circle,transparent 0 57%,#000 57% 100%)}
+          .ring.outer{width:360px;height:360px;opacity:.95;background:conic-gradient(#7b8b78 0 50deg,#a88244 50deg 105deg,#89a89b 105deg 160deg,#8d6b61 160deg 220deg,#64748b 220deg 280deg,#31526b 280deg 360deg)}
+          .ring.middle{width:250px;height:250px;mask:radial-gradient(circle,transparent 0 47%,#000 47% 100%);-webkit-mask:radial-gradient(circle,transparent 0 47%,#000 47% 100%);background:conic-gradient(rgba(123,139,120,.82) 0 60deg,rgba(168,130,68,.82) 60deg 120deg,rgba(137,168,155,.85) 120deg 180deg,rgba(141,107,97,.82) 180deg 240deg,rgba(100,116,139,.85) 240deg 300deg,rgba(49,82,107,.85) 300deg 360deg)}
+          .ring.inner{width:132px;height:132px;background:linear-gradient(135deg,#2f4b63,#1f3141);border:10px solid #f8f5ef}
+          .sun-center{position:absolute;text-align:center;color:#fff;z-index:2;max-width:120px}
+          .sun-center strong{display:block;font-size:20px;line-height:1.2}
+          .sun-center span{font-size:12px;opacity:.88}
+          .ring-labels{position:absolute;inset:0}
+          .ring-chip{position:absolute;padding:6px 10px;border-radius:999px;background:rgba(251,250,247,.94);border:1px solid var(--line);font-size:12px;box-shadow:var(--shadow)}
+          .sun-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px}
+          .legend-item{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted)}
+          .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:0 0 auto}
+          -->
         </div>
       </div>
     </section>
@@ -513,7 +582,7 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
           <button class="chart-export-btn" onclick="exportChart('chart-treemap', 'svg')" title="导出SVG">SVG</button>
         </div>
         <div id="chart-treemap" class="chart-container">
-          <!-- ECharts 矩形树图配置示例（禁止替换为 radar/bar/line/pie）：
+          <!-- 方案A：ECharts 矩形树图（无 value 精确数字，纯结构占位）：
           ⚠️ 注意：value 只控制视觉面积比例（无真实数据），不要写精确数字或百分比。
           {
             type: 'treemap',
@@ -552,6 +621,68 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
             levels: [{ itemStyle: { borderWidth: 0 } }]
           }
           -->
+
+          <!-- 方案B（推荐）：CSS Grid tile 矩形树图 — 无需 ECharts，完全避免 value 数据问题。
+          用 CSS Grid 布局 + 彩色渐变 div 表示各维度的视觉权重区隔。
+
+          HTML:
+          <div class="treemap">
+            <div class="tile b1">
+              <div><h4>D1 方向与技术标尺</h4><p>看候选人是否把底层系统当长期事业。</p></div>
+              <div class="subtiles">
+                <div class="sub">质量/可靠性标尺</div>
+                <div class="sub">长期投入与技术上限</div>
+              </div>
+            </div>
+            <div class="tile b2">
+              <div><h4>D2 内驱与主动闭环</h4><p>看是否能在模糊任务下自己启动。</p></div>
+              <div class="subtiles">
+                <div class="sub">主动拆解问题</div>
+                <div class="sub">风险暴露与闭环</div>
+              </div>
+            </div>
+            <div class="tile b3">
+              <div><h4>D3 韧性与稳定推进</h4><p>看是否能在反复调优中保持节奏。</p></div>
+              <div class="subtiles">
+                <div class="sub">恢复力</div>
+                <div class="sub">长链路耐心</div>
+              </div>
+            </div>
+            <div class="tile b4">
+              <div><h4>D4 学习敏捷与认知迁移</h4><p>看能否跨算法、系统、平台切换视角。</p></div>
+              <div class="subtiles">
+                <div class="sub">跨域学习</div>
+                <div class="sub">抽象与迁移</div>
+              </div>
+            </div>
+            <div class="tile b5">
+              <div><h4>D5 工程基础与系统判断</h4><p>看基础知识能否转成工程判断。</p></div>
+              <div class="subtiles">
+                <div class="sub">编程/CS 基础</div>
+                <div class="sub">系统 trade-off</div>
+              </div>
+            </div>
+            <div class="tile b6">
+              <div><h4>D6 协作与可信交付</h4><p>看是否能成为团队愿意继续合作的人。</p></div>
+              <div class="subtiles">
+                <div class="sub">沟通与文档</div>
+                <div class="sub">测试/联调</div>
+              </div>
+            </div>
+          </div>
+
+          CSS:
+          .treemap{min-height:420px;display:grid;grid-template-columns:1.05fr .95fr;gap:12px}
+          .tile{border-radius:18px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;min-height:130px;color:#fff;position:relative;overflow:hidden}
+          .tile h4{margin:0 0 6px;font-size:18px}
+          .tile p{margin:0;font-size:13px;line-height:1.55;color:rgba(255,255,255,.9)}
+          .tile .subtiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+          .tile .sub{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);padding:10px;border-radius:14px;font-size:12px}
+          .b1{background:linear-gradient(135deg,#31526b,#23374a)} .b2{background:linear-gradient(135deg,#7b8b78,#667560)}
+          .b3{background:linear-gradient(135deg,#8d6b61,#77584f)} .b4{background:linear-gradient(135deg,#89a89b,#6f9082)}
+          .b5{background:linear-gradient(135deg,#a88244,#8d6e3e)} .b6{background:linear-gradient(135deg,#64748b,#4d5a6d)}
+          @media(max-width:720px){.treemap{grid-template-columns:1fr}}
+          -->
         </div>
       </div>
     </section>
@@ -577,9 +708,8 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
           </button>
         </div>
         <div id="chart-scatter" class="chart-container">
-          <!-- ECharts 散点图配置示例（禁止替换为 radar/bar/line/pie）：
-          ⚠️ 注意：坐标值只表示相对位置关系（无真实测量数据），禁止写精确数字。
-          散点图展示"成长潜力 vs 当前能力"的两维分布，用气泡大小或颜色区分维度。
+          <!-- 方案A：ECharts 散点图（无坐标数据，纯结构占位）：
+          ⚠️ 注意：value 只表示气泡存在性，不写精确数字。适用于维度对比分布。
           {
             type: 'scatter',
             data: [
@@ -592,6 +722,48 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
             xAxis: { name: '成长潜力（相对位置）', type: 'category' },
             yAxis: { name: '当前能力（相对位置）', type: 'category' }
           }
+          -->
+
+          <!-- 方案B（推荐）：CSS+SVG 四象限 — 无需 ECharts，完全避免坐标数据问题。
+          展示"成长潜力 × 当前交付稳定性"的人才分型，四个象限代表四种培养路径。
+          适用于校招/实习场景的人才分类，而非给维度打分。
+
+          HTML:
+          <div class="scatter-box">
+            <div class="quad-label quad-1">高潜力 × 高稳定：优先争夺</div>
+            <div class="quad-label quad-2">高潜力 × 低稳定：重点培养</div>
+            <div class="quad-label quad-3">低潜力 × 低稳定：谨慎评估</div>
+            <div class="quad-label quad-4">低潜力 × 高稳定：适合窄口径执行岗</div>
+            <div class="axis-note axis-x">当前交付稳定性 →</div>
+            <div class="axis-note axis-y">成长潜力 →</div>
+            <svg class="scatter-svg" viewBox="0 0 900 420">
+              <line x1="450" y1="30" x2="450" y2="390" stroke="#c9c2b8" stroke-width="2"/>
+              <line x1="60" y1="210" x2="840" y2="210" stroke="#c9c2b8" stroke-width="2"/>
+              <!-- 四个象限气泡（位置为相对结构，非真实数据） -->
+              <g>
+                <circle cx="620" cy="110" r="22" fill="#23374a" opacity=".92"/>
+                <text x="620" y="116" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">优先争夺</text>
+                <text x="650" y="92" fill="#23374a" font-size="13" font-weight="700">自驱快跑型</text>
+              </g>
+              <!-- 维度气泡（用小圆点标注各维度的大致分布区域） -->
+              <g>
+                <circle cx="545" cy="156" r="10" fill="#89a89b"/>
+                <text x="560" y="160" fill="#45695b" font-size="12">D4 学习敏捷</text>
+                <circle cx="580" cy="176" r="10" fill="#a88244"/>
+                <text x="595" y="180" fill="#8a5a2e" font-size="12">D2 主动闭环</text>
+              </g>
+            </svg>
+          </div>
+
+          CSS:
+          .scatter-box{position:relative;border-radius:18px;background:linear-gradient(180deg,#fcfbf8,#f5f1e8);overflow:hidden}
+          .scatter-svg{width:100%;height:100%}
+          .quad-label{position:absolute;font-size:12px;color:var(--muted);background:rgba(251,250,247,.86);padding:6px 10px;border-radius:999px;border:1px solid var(--line)}
+          .quad-1{top:14px;right:14px} .quad-2{top:14px;left:14px}
+          .quad-3{bottom:14px;left:14px} .quad-4{bottom:14px;right:14px}
+          .axis-note{position:absolute;font-size:13px;color:var(--deep);font-weight:700}
+          .axis-x{bottom:10px;left:50%;transform:translateX(-50%)}
+          .axis-y{left:10px;top:50%;transform:translateY(-50%) rotate(-90deg);transform-origin:left top}
           -->
         </div>
       </div>
@@ -1008,15 +1180,15 @@ function exportChart(chartId, format) {
 - [ ] 每个维度下有二级行为，且行为可观察、可区分
 - [ ] 每个行为下有三级证据，且证据不直接等于工具/语言/框架
 - [ ] 有"验证结论"节，说明从多元企业信息中提炼出的发现
+- [ ] **有显式的「降级说明」节**：明确说明哪些技术词被降级及原因（如规模词万卡集群、芯片栈昇腾/昆仑芯等降为证据层）；若无降级内容，也需说明"本次建模未发现需要降级的技术词"
 - [ ] **校招/实习场景**：验证公司信息全部来自campus/graduate/intern入口，无社招JD污染
 
 **图表规范性（硬约束）：**
-- [ ] **旭日图存在**：`id="chart-sunburst"` 且 ECharts 配置 `type: 'sunburst'`（不是 radar/bar/line/pie）
-- [ ] **矩形树图存在**：`id="chart-treemap"` 且 `type: 'treemap'`（不是 radar/bar/line/pie）
-- [ ] **散点图存在**：`id="chart-scatter"` 且 `type: 'scatter'`（不是 radar/bar/line/pie）
-- [ ] **能力树存在**：`id="chart-tree"` 且 `type: 'tree'`（不是 radar/bar/line/pie）
-- [ ] **四个图表全部生成**，缺少任何一个 → 必须补充后再输出
-- [ ] **图表中无量化数值**：ECharts data 中没有 value 精确数字、没有百分比、没有坐标轴刻度 min/max、没有 markArea 精确分界线；散点图坐标用 `[null, null]` 占位
+- [ ] **四个图表全部存在**：旭日图、矩形树图、散点图、能力树；缺少任何一个 → 必须补充后再输出
+- [ ] **图表实现方式检查**（二选一，均合规）：
+  - 方案A（ECharts）：对应容器 id 存在，type 为 sunburst/treemap/scatter/tree，无 value 精确数字，无坐标轴 min/max
+  - 方案B（推荐 CSS/HTML）：旭日图用 conic-gradient，矩形树图用 CSS Grid tile，四象限散点图用 SVG 轴线+气泡 —— 均无需任何数值数据
+- [ ] **图表中无量化数值**：无 value 精确数字、无百分比、无坐标轴刻度 min/max、无 markArea 精确分界线
 
 **echarts.min.js 关联：**
 - [ ] `<script src="echarts.min.js">` 存在于 `<head>` 或 `<body>` 底部
@@ -1048,7 +1220,8 @@ function exportChart(chartId, format) {
 | **技能维度陷阱** | **一级维度禁止是技能/工具/技术栈；维度必须是对"什么样的人"的特质判断，而非"需要什么技能"的枚举；行为（二级）才是技能落脚点** |
 | **校招社招污染** | **校招/实习场景严禁使用社招JD；禁止用资深岗位反推校招标准；只允许campus/graduate/intern入口；校招维度以"潜力/可塑性"为核心** |
 | **图表惯性漂移** | **HTML报告必须使用 sunburst/treemap/scatter/tree 四种图表；禁止使用 radar/bar/line/pie；生成后必须按自检清单逐项验证图表类型** |
-| **图表量化幻觉** | **图表ECharts配置中禁止填写精确数值（value/坐标/百分比/轴刻度）；胜任力模型无测量数据，图表只展示相对结构关系；若生成时填写了具体数字→立即清除** |
+| **图表量化幻觉** | **图表ECharts配置中禁止填写精确数值（value/坐标/百分比/轴刻度）；胜任力模型无测量数据，图表只展示相对结构关系；若生成时填写了具体数字→立即清除；优先使用 CSS/HTML 替代方案从根本上规避** |
+| **降级说明缺失** | **HTML报告必须包含显式的「降级说明」节，说明哪些技术词被降级及原因（如"万卡集群降为证据层"）；禁止省略；若无降级内容，也需明确说明"本次建模中未发现需要降级的技术词"** |
 
 ---
 
