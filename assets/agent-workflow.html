@@ -45,7 +45,7 @@
     .hero-text h1 { font-size: 20px; margin: 0 0 4px; line-height: 1.3; }
     .hero-text p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.65; }
     .chart-card {
-      background: var(--card);
+      background: rgba(255,255,255,.85);
       border: 1px solid rgba(59,130,246,.14);
       border-radius: 18px;
       box-shadow: 0 12px 30px rgba(15,23,42,.06);
@@ -267,7 +267,7 @@
     ];
 
     chart.setOption({
-      backgroundColor: 'transparent',
+      backgroundColor: null,
       tooltip: {
         trigger: 'item',
         confine: true,
@@ -334,7 +334,7 @@
 
     /* ── 导出功能 ────────────────────────────────────────────── */
     document.getElementById('btn-svg').addEventListener('click', () => {
-      const svgDataUrl = chart.getDataURL({ type: 'svg', pixelRatio: 2, backgroundColor: '#fff' });
+      const svgDataUrl = chart.getDataURL({ type: 'svg', pixelRatio: 2 });
       const a = document.createElement('a');
       a.href = svgDataUrl;
       a.download = 'agent-workflow.svg';
@@ -342,7 +342,7 @@
     });
 
     document.getElementById('btn-png').addEventListener('click', () => {
-      const pngDataUrl = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
+      const pngDataUrl = chart.getDataURL({ type: 'png', pixelRatio: 2 });
       const a = document.createElement('a');
       a.href = pngDataUrl;
       a.download = 'agent-workflow.png';
