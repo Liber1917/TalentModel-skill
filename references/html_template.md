@@ -34,33 +34,46 @@
           <button class="chart-export-btn" onclick="exportChart('chart-sunburst', 'svg')" title="导出SVG">SVG</button>
         </div>
         <div id="chart-sunburst" class="chart-container">
-          <!-- 方案A：ECharts 旭日图（无 value 精确数字，纯结构占位）：
-          ⚠️ 注意：value 只表示结构占比（无真实数据），不要写精确数字。
+          <!-- 方案A：ECharts 旭日图（全景概览，只显示维度名，二级折叠，三级不展开）：
+          ⚠️ 旭日图约束（防文字堆叠）：
+             - 只显示 D1-D6 维度名称（二级行为折叠不显示）
+             - 三级证据节点禁止出现在旭日图中
+             - D1维度名每个不超过 8 个字符
+             - value 只表示结构占比，不要写精确数字
           {
             type: 'sunburst',
             data: [{
-              name: 'D1 维度名',
-              children: [
-                { name: 'B1.1 行为名',
-                  children: [
-                    { name: 'E1.1.1 证据名' },
-                    { name: 'E1.1.2 证据名' }
-                  ]
-                },
-                { name: 'B1.2 行为名', children: [{ name: 'E1.2.1 证据名' }] }
-              ]
+              name: 'D1 方向感',        // ← 仅维度名，禁止展开行为/证据
+              itemStyle: { color: '#7b8b78' },
+              children: []              // ← 二级折叠，hover时显示label，不展开子节点
             }, {
-              name: 'D2 维度名',
-              children: [
-                { name: 'B2.1 行为名', children: [{ name: 'E2.1.1 证据名' }] }
-              ]
+              name: 'D2 内驱力',
+              itemStyle: { color: '#a88244' },
+              children: []
+            }, {
+              name: 'D3 韧性',
+              itemStyle: { color: '#89a89b' },
+              children: []
+            }, {
+              name: 'D4 学习敏捷',
+              itemStyle: { color: '#8d6b61' },
+              children: []
+            }, {
+              name: 'D5 专业度',
+              itemStyle: { color: '#64748b' },
+              children: []
+            }, {
+              name: 'D6 协作力',
+              itemStyle: { color: '#31526b' },
+              children: []
             }],
             radius: ['15%', '90%'],
-            label: { rotate: 'radial' }
+            label: { rotate: 'radial', fontSize: 11 }
           }
           -->
 
           <!-- 方案B（推荐）：CSS conic-gradient 旭日图 — 无需 ECharts，完全避免 value 数据问题。
+          ⚠️ 旭日图约束：维度名不超过 8 字符；仅标注维度名称（二级折叠），三级证据不显示。
           用 CSS conic-gradient 绘制同心圆环，用 ring-chip 标注各维度名称。
 
           HTML:
@@ -73,12 +86,13 @@
               <span>维度 → 行为 → 证据</span>
             </div>
             <div class="ring-labels">
-              <div class="ring-chip" style="top:18px;left:50%;transform:translateX(-50%)">D1 方向与技术标尺</div>
-              <div class="ring-chip" style="top:86px;right:52px">D2 内驱与主动闭环</div>
-              <div class="ring-chip" style="bottom:104px;right:38px">D3 韧性与稳定推进</div>
+              <!-- ⚠️ 每个维度名不超过 8 个字符 -->
+              <div class="ring-chip" style="top:18px;left:50%;transform:translateX(-50%)">D1 方向感</div>
+              <div class="ring-chip" style="top:86px;right:52px">D2 内驱力</div>
+              <div class="ring-chip" style="bottom:104px;right:38px">D3 韧性</div>
               <div class="ring-chip" style="bottom:18px;left:50%;transform:translateX(-50%)">D4 学习敏捷</div>
-              <div class="ring-chip" style="bottom:104px;left:38px">D5 工程基础</div>
-              <div class="ring-chip" style="top:86px;left:52px">D6 协作与交付</div>
+              <div class="ring-chip" style="bottom:104px;left:38px">D5 专业度</div>
+              <div class="ring-chip" style="top:86px;left:52px">D6 协作力</div>
             </div>
           </div>
           <div class="sun-legend">
