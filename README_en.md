@@ -6,19 +6,17 @@
 
 ---
 
-## 🗺️ Version Roadmap × Agent Workflow
+## 🤖 Agent Recommended Workflow
 
-> 📌 **Version Roadmap** (left): Key milestones from v1.0.0 to v1.3.1  
-> 🤖 **Agent Workflow** (right): Recommended execution path, from reading SKILL.md → generating & iterating HTML reports
+> 🤖 Recommended execution path for agents, from reading SKILL.md → generating & iterating HTML reports
 
-**Live Preview:** [assets/examples/dev-roadmap.html](assets/examples/dev-roadmap.html)
-
-[![Version Roadmap](https://img.shields.io/badge/preview-Development%20Roadmap-blue?style=flat-square)](assets/examples/dev-roadmap.html)
+**Live Preview (exportable as SVG/PNG):** [assets/agent-workflow.html](assets/agent-workflow.html)
 
 <!--
   GitHub README does not execute ECharts scripts — visit the live preview above.
+  Right-click chart in browser → Save as PNG, or use export tools for SVG.
   Screenshot fallback (replace with actual path):
-  ![Development Roadmap](assets/examples/dev-roadmap-screenshot.png)
+  ![Agent Workflow](assets/agent-workflow.png)
 -->
 
 ---
@@ -82,10 +80,10 @@ TalentModel-skill/
 ├── assets/
 │   ├── echarts.min.js               # ECharts library (offline render)
 │   ├── config_template.txt          # Config template
+│   ├── agent-workflow.html          # Agent recommended workflow (exportable as SVG/PNG)
 │   └── examples/                    # Example files
 │       ├── ai_infra_campus.txt      # Sample conversation output
-│       ├── sunburst-comparison*.html # Chart comparison examples
-│       └── dev-roadmap.html          # Version roadmap × Agent workflow (interactive)
+│       └── sunburst-comparison*.html # Chart comparison examples
 └── references/                      # Reference docs (load as needed)
     ├── html_template.md              # HTML report template (CSS/JS)
     ├── enterprise_reference.md       # Valid company list by type
