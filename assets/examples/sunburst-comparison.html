@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>旭日图方案对比：ECharts vs CSS conic-gradient</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8f6f2; --card: #fff; --deep: #1e2c3a; --muted: #7a7a72;
+      --line: #e5e0d6; --accent: #23374a; --shadow: 0 2px 8px rgba(30,44,58,.08);
+      --good: #3a7a4a; --bad: #c0392b;
+    }
+    body { background: var(--bg); font-family: 'PingFang SC','Microsoft YaHei',sans-serif;
+           color: var(--deep); min-height: 100vh; padding: 24px; }
+    .page-header { max-width: 1200px; margin: 0 auto 24px; text-align: center; }
+    .page-header h1 { font-size: 26px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+    .page-header p  { font-size: 14px; color: var(--muted); max-width: 680px; margin: 0 auto; line-height: 1.7; }
+
+    /* grid */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; }
+    @media (max-width: 860px) { .compare-grid { grid-template-columns: 1fr; } }
+
+    /* panel */
+    .panel { background: var(--card); border-radius: 20px; overflow: hidden;
+             box-shadow: var(--shadow); border: 1px solid var(--line); }
+    .panel-header { padding: 14px 18px; border-bottom: 1px solid var(--line);
+                    display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .badge { display: inline-flex; align-items: center; padding: 3px 10px;
+             border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .badge-echarts { background: #fde8e8; color: var(--bad); }
+    .badge-css     { background: #e8f5e9; color: var(--good); }
+    .panel-title { font-size: 15px; font-weight: 700; }
+    .panel-sub   { font-size: 11px; color: var(--muted); }
+    .verdict { margin-left: auto; padding: 3px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+    .verdict-bad  { background: #fde8e8; color: var(--bad); }
+    .verdict-good { background: #e8f5e9; color: var(--good); }
+    .panel-body { padding: 16px; }
+
+    /* tags */
+    .issue-list { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+    .issue-tag { padding: 3px 9px; border-radius: 8px; font-size: 11px;
+                 background: #fde8e8; color: var(--bad); border: 1px solid #f5c6c6; }
+    .plus-tag  { padding: 3px 9px; border-radius: 8px; font-size: 11px;
+                 background: #e8f5e9; color: var(--good); border: 1px solid #c8e6c9; }
+
+    /* ECharts container */
+    #chart-sunburst-echarts { width: 100%; height: 440px; }
+
+    /* CSS Sunburst */
+    .sunburst-stage { position: relative; height: 420px;
+                       display: flex; align-items: center; justify-content: center; }
+    .ring { position: absolute; border-radius: 50%;
+             box-shadow: inset 0 0 0 1px rgba(255,255,255,.8), 0 0 0 1px rgba(35,55,74,.08); }
+    .ring.outer { width: 360px; height: 360px;
+      background: conic-gradient(
+        #7b8b78 0 50deg, #a88244 50deg 105deg, #89a89b 105deg 160deg,
+        #8d6b61 160deg 220deg, #64748b 220deg 280deg, #31526b 280deg 360deg);
+      mask: radial-gradient(circle, transparent 0 57%, #000 57% 100%);
+      -webkit-mask: radial-gradient(circle, transparent 0 57%, #000 57% 100%); opacity: .95; }
+    .ring.middle { width: 250px; height: 250px;
+      background: conic-gradient(
+        rgba(123,139,120,.82) 0 60deg, rgba(168,130,68,.82) 60deg 120deg,
+        rgba(137,168,155,.85) 120deg 180deg, rgba(141,107,97,.82) 180deg 240deg,
+        rgba(100,116,139,.85) 240deg 300deg, rgba(49,82,107,.85) 300deg 360deg);
+      mask: radial-gradient(circle, transparent 0 47%, #000 47% 100%);
+      -webkit-mask: radial-gradient(circle, transparent 0 47%, #000 47% 100%); }
+    .ring.inner { width: 132px; height: 132px;
+      background: linear-gradient(135deg,#2f4b63,#1f3141); border: 10px solid #f8f5ef; }
+    .sun-center { position: absolute; text-align: center; color: #fff; z-index: 2; max-width: 120px; }
+    .sun-center strong { display: block; font-size: 20px; line-height: 1.2; }
+    .sun-center span   { font-size: 12px; opacity: .88; }
+    .ring-labels { position: absolute; inset: 0; }
+    .ring-chip { position: absolute; padding: 5px 9px; border-radius: 999px;
+      background: rgba(251,250,247,.94); border: 1px solid #e5e0d6; font-size: 11px;
+      box-shadow: 0 2px 8px rgba(30,44,58,.08); color: #1e2c3a; font-weight: 600; white-space: nowrap; }
+    .sun-legend { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 8px; }
+    .legend-item { display: flex; gap: 7px; align-items: flex-start; font-size: 12px; color: var(--muted); }
+    .dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 5px; flex: 0 0 auto; }
+
+    /* score cards */
+    .divider { max-width: 1200px; margin: 24px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 860px) { .divider { grid-template-columns: 1fr; } }
+    .score-card { background: var(--card); border-radius: 16px; padding: 16px 18px;
+                  border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .score-card h3 { font-size: 13px; margin-bottom: 10px; color: var(--accent); }
+    .score-row { display: flex; justify-content: space-between; align-items: center;
+                 padding: 5px 0; font-size: 12px; border-bottom: 1px dashed var(--line); }
+    .score-row:last-child { border-bottom: none; }
+    .score-label { color: var(--muted); }
+    .score-val { font-weight: 700; }
+    .s-good { color: var(--good); } .s-bad { color: var(--bad); } .s-neutral { color: var(--muted); }
+
+    /* code blocks */
+    .code-section { max-width: 1200px; margin: 28px auto 0; }
+    .code-section h2 { font-size: 17px; font-weight: 700; color: var(--accent); margin-bottom: 14px; }
+    .code-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 860px) { .code-grid { grid-template-columns: 1fr; } }
+    .code-block { background: #1e2c3a; border-radius: 14px; overflow: hidden; }
+    .code-header { background: #162232; padding: 9px 14px; display: flex; align-items: center; gap: 8px; }
+    .code-header .badge { font-size: 11px; }
+    .code-header .badge-echarts { background: rgba(192,57,43,.2); color: #ff8a80; }
+    .code-header .badge-css     { background: rgba(58,122,74,.2);  color: #a5d6a7; }
+    .code-lang { color: #8ab4c4; font-size: 12px; margin-left: auto; font-family: monospace; }
+    .code-body { padding: 14px 16px; overflow-x: auto; }
+    pre { margin: 0; font-family: 'Fira Code','Cascadia Code','Consolas',monospace;
+          font-size: 11px; line-height: 1.65; color: #cfd8dc; white-space: pre; }
+    .kw { color: #c792ea; } .str { color: #c3e88d; } .num { color: #f78c6c; }
+    .cmt { color: #546e7a; font-style: italic; } .prop { color: #82aaff; }
+
+    /* conclusion */
+    .conclusion { max-width: 1200px; margin: 28px auto 0;
+                  background: linear-gradient(135deg,#23374a,#1e2c3a);
+                  border-radius: 16px; padding: 18px 26px; color: #fff; }
+    .conclusion h2 { font-size: 15px; margin-bottom: 10px; }
+    .conclusion ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+    @media (max-width: 700px) { .conclusion ul { grid-template-columns: 1fr; } }
+    .conclusion li { font-size: 13px; color: rgba(255,255,255,.85); line-height: 1.6; }
+    .conclusion li::before { content: '✓ '; color: #a5d6a7; font-weight: 700; }
+    .conclusion li.x::before { content: '✗ '; color: #ff8a80; }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>旭日图方案对比：ECharts vs CSS conic-gradient</h1>
+  <p>左：ECharts 方案 — 有 value 数据字段，LLM 幻觉高发；右：CSS 方案 — 零数据字段，从根本上规避幻觉，视觉效果更轻量。</p>
+</div>
+
+<!-- ═══════════════════ CHARTS ═══════════════════ -->
+<div class="compare-grid">
+
+  <!-- LEFT: ECharts -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="badge badge-echarts">方案 A</span>
+      <div>
+        <div class="panel-title">ECharts sunburst</div>
+        <div class="panel-sub">type: 'sunburst' + echarts.min.js（约 900KB）</div>
+      </div>
+      <span class="verdict verdict-bad">⚠ 问题较多</span>
+    </div>
+    <div class="panel-body">
+      <div class="issue-list">
+        <span class="issue-tag">LLM 幻觉：填写精确 value</span>
+        <span class="issue-tag">轴刻度 min/max 幻觉</span>
+        <span class="issue-tag">radius 百分比幻觉</span>
+        <span class="issue-tag">需额外加载 echarts.min.js</span>
+        <span class="issue-tag">Canvas 无 DOM 可访问性</span>
+      </div>
+      <div id="chart-sunburst-echarts"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: CSS -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="badge badge-css">方案 B · 推荐</span>
+      <div>
+        <div class="panel-title">CSS conic-gradient</div>
+        <div class="panel-sub">纯 HTML + CSS，零外部依赖</div>
+      </div>
+      <span class="verdict verdict-good">✓ 无幻觉风险</span>
+    </div>
+    <div class="panel-body">
+      <div class="issue-list">
+        <span class="plus-tag">无数据字段 → 零幻觉</span>
+        <span class="plus-tag">零外部依赖</span>
+        <span class="plus-tag">CSS 精确控制视觉</span>
+        <span class="plus-tag">DOM 节点可索引/打印</span>
+        <span class="plus-tag">代码量极少</span>
+      </div>
+      <div class="sunburst-stage">
+        <div class="ring outer"></div>
+        <div class="ring middle"></div>
+        <div class="ring inner"></div>
+        <div class="sun-center">
+          <strong>候选人画像</strong>
+          <span>人 → 行为 → 证据</span>
+        </div>
+        <div class="ring-labels">
+          <div class="ring-chip" style="top:18px;left:50%;transform:translateX(-50%)">D1 方向与技术标尺</div>
+          <div class="ring-chip" style="top:86px;right:52px">D2 内驱与主动闭环</div>
+          <div class="ring-chip" style="bottom:104px;right:38px">D3 韧性与稳定推进</div>
+          <div class="ring-chip" style="bottom:18px;left:50%;transform:translateX(-50%)">D4 学习敏捷与认知迁移</div>
+          <div class="ring-chip" style="bottom:104px;left:38px">D5 工程基础与系统判断</div>
+          <div class="ring-chip" style="top:86px;left:52px">D6 协作与可信交付</div>
+        </div>
+      </div>
+      <div class="sun-legend">
+        <div class="legend-item"><span class="dot" style="background:#7b8b78"></span><span><strong>D1</strong>：质量标尺、性能意识</span></div>
+        <div class="legend-item"><span class="dot" style="background:#a88244"></span><span><strong>D2</strong>：主动拆解、闭环推进</span></div>
+        <div class="legend-item"><span class="dot" style="background:#89a89b"></span><span><strong>D3</strong>：回退恢复、持续试验</span></div>
+        <div class="legend-item"><span class="dot" style="background:#8d6b61"></span><span><strong>D4</strong>：跨域学习、抽象迁移</span></div>
+        <div class="legend-item"><span class="dot" style="background:#64748b"></span><span><strong>D5</strong>：CS 基础、系统判断</span></div>
+        <div class="legend-item"><span class="dot" style="background:#31526b"></span><span><strong>D6</strong>：沟通清晰、文档测试</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════ SCORES ═══════════════════ -->
+<div class="divider">
+  <div class="score-card">
+    <h3>ECharts 方案 · 评分</h3>
+    <div class="score-row"><span class="score-label">幻觉风险</span><span class="score-val s-bad">高</span></div>
+    <div class="score-row"><span class="score-label">视觉一致性</span><span class="score-val s-neutral">中（依赖 LLM 配色）</span></div>
+    <div class="score-row"><span class="score-label">外部依赖</span><span class="score-val s-bad">需 echarts.min.js (~900KB)</span></div>
+    <div class="score-row"><span class="score-label">打印效果</span><span class="score-val s-neutral">一般（Canvas 栅格化）</span></div>
+    <div class="score-row"><span class="score-label">DOM 可访问性</span><span class="score-val s-neutral">需 aria 标注</span></div>
+    <div class="score-row"><span class="score-label">代码量</span><span class="score-val s-bad">多（配置对象 + JS）</span></div>
+  </div>
+  <div class="score-card">
+    <h3>CSS 方案 · 评分</h3>
+    <div class="score-row"><span class="score-label">幻觉风险</span><span class="score-val s-good">零（无数据字段）</span></div>
+    <div class="score-row"><span class="score-label">视觉一致性</span><span class="score-val s-good">高（CSS 精确控制）</span></div>
+    <div class="score-row"><span class="score-label">外部依赖</span><span class="score-val s-good">零（纯 HTML/CSS）</span></div>
+    <div class="score-row"><span class="score-label">打印效果</span><span class="score-val s-good">优秀（DOM 原生打印）</span></div>
+    <div class="score-row"><span class="score-label">DOM 可访问性</span><span class="score-val s-good">优秀（节点全暴露）</span></div>
+    <div class="score-row"><span class="score-label">代码量</span><span class="score-val s-good">极少（CSS 属性声明）</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CODE ═══════════════════ -->
+<div class="code-section">
+  <h2>核心实现对比</h2>
+  <div class="code-grid">
+
+    <!-- ECharts code -->
+    <div class="code-block">
+      <div class="code-header">
+        <span class="badge badge-echarts">方案 A</span>
+        <span class="code-lang">JS / JSON 配置</span>
+      </div>
+      <div class="code-body">
+<pre><span class="cmt">// 需要额外加载 echarts.min.js (~900KB)</span>
+<span class="kw">const</span> chart = echarts.<span class="prop">init</span>(
+  <span class="kw">document</span>.<span class="prop">getElementById</span>(<span class="str">'chart-sunburst'</span>)
+);
+
+<span class="cmt">// ⚠️ LLM 幻觉高发区：填写精确 value 数值</span>
+<span class="cmt">// ⚠️ LLM 幻觉高发区：填写精确 radius 百分比</span>
+chart.<span class="prop">setOption</span>({
+  <span class="prop">type</span>: <span class="str">'sunburst'</span>,
+  <span class="prop">data</span>: [{
+    <span class="prop">name</span>: <span class="str">'D1 方向与技术标尺'</span>,
+    <span class="prop">children</span>: [{
+      <span class="prop">name</span>: <span class="str">'B1.1 主动问题识别'</span>,
+      <span class="prop">children</span>: [
+        { <span class="prop">name</span>: <span class="str">'E1.1.1'</span>, <span class="prop">value</span>: <span class="num">25</span> }, <span class="cmt">// ← 幻觉!</span>
+        { <span class="prop">name</span>: <span class="str">'E1.1.2'</span>, <span class="prop">value</span>: <span class="num">18</span> }  <span class="cmt">// ← 幻觉!</span>
+      ]
+    }]
+  }, { <span class="prop">name</span>: <span class="str">'D2'</span>, <span class="prop">children</span>: [...] }],
+
+  <span class="prop">radius</span>: [<span class="str">'15%'</span>, <span class="str">'90%'</span>],    <span class="cmt">// ← 幻觉!</span>
+  <span class="prop">label</span>: { <span class="prop">rotate</span>: <span class="str">'radial'</span> }
+});
+
+<span class="cmt">// 还需要：canvas 导出、resize 监听、</span>
+<span class="cmt">// legend 同步、aria 标注、容错处理...</span></pre>
+      </div>
+    </div>
+
+    <!-- CSS code -->
+    <div class="code-block">
+      <div class="code-header">
+        <span class="badge badge-css">方案 B · 推荐</span>
+        <span class="code-lang">HTML + CSS（纯声明式）</span>
+      </div>
+      <div class="code-body">
+<pre><span class="cmt">&lt;!-- 零 JS、零数据、零外部依赖 --&gt;</span>
+&lt;<span class="prop">div</span> <span class="kw">class</span>=<span class="str">"sunburst-stage"</span>&gt;
+  &lt;<span class="prop">div</span> <span class="kw">class</span>=<span class="str">"ring outer"</span>&gt;&lt;/<span class="prop">div</span>&gt;
+  &lt;<span class="prop">div</span> <span class="kw">class</span>=<span class="str">"ring middle"</span>&gt;&lt;/<span class="prop">div</span>&gt;
+  &lt;<span class="prop">div</span> <span class="kw">class</span>=<span class="str">"ring inner"</span>&gt;&lt;/<span class="prop">div</span>&gt;
+  &lt;<span class="prop">div</span> <span class="kw">class</span>=<span class="str">"sun-center"</span>&gt;
+    &lt;<span class="prop">strong</span>&gt;候选人画像&lt;/<span class="prop">strong</span>&gt;
+    &lt;<span class="prop">span</span>&gt;人 → 行为 → 证据&lt;/<span class="prop">span</span>&gt;
+  &lt;/<span class="prop">div</span>&gt;
+  &lt;<span class="prop">div</span> <span class="kw">class</span>=<span class="str">"ring-labels"</span>&gt;
+    <span class="cmt">&lt;!-- 6 个维度标签 chip --&gt;</span>
+    &lt;<span class="prop">div</span> <span class="kw">class</span>=<span class="str">"ring-chip"</span>&gt;D1 方向与技术标尺&lt;/<span class="prop">div</span>&gt;
+    &lt;<span class="prop">div</span> <span class="kw">class</span>=<span class="str">"ring-chip"</span>&gt;D2 内驱与主动闭环&lt;/<span class="prop">div</span>&gt;
+    <span class="cmt">&lt;!-- ... 4 more --&gt;</span>
+  &lt;/<span class="prop">div</span>&gt;
+&lt;/<span class="prop">div</span>&gt;
+
+<span class="cmt">/* 纯 CSS，无任何数据 */</span>
+.<span class="prop">ring</span>.<span class="kw">outer</span> {
+  <span class="prop">width</span>: <span class="num">360px</span>; <span class="prop">height</span>: <span class="num">360px</span>;
+  <span class="prop">background</span>: <span class="prop">conic-gradient</span>(
+    #7b8b78 0 50deg,   <span class="cmt">/* D1 */</span>
+    #a88244 50deg 105deg,  <span class="cmt">/* D2 */</span>
+    #89a89b 105deg 160deg, <span class="cmt">/* D3 */</span>
+    #8d6b61 160deg 220deg, <span class="cmt">/* D4 */</span>
+    #64748b 220deg 280deg, <span class="cmt">/* D5 */</span>
+    #31526b 280deg 360deg  <span class="cmt">/* D6 */</span>
+  );
+  <span class="prop">mask</span>: <span class="prop">radial-gradient</span>(circle, transparent 0 57%, #000 57% 100%);
+}</pre>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════ CONCLUSION ═══════════════════ -->
+<div class="conclusion">
+  <h2>结论</h2>
+  <ul>
+    <li>CSS 方案从架构上消灭了 LLM 填写精确数值的能力，从根本上规避数据幻觉</li>
+    <li class="x">ECharts 方案的 value 字段是 LLM 幻觉重灾区，几乎无法完全约束</li>
+    <li>CSS 方案零外部依赖，文件更小，加载更快，无 CORS/网络依赖</li>
+    <li class="x">ECharts 需要 ~900KB 的 js 文件，增加了报告分享复杂度</li>
+    <li>CSS 方案的 DOM 结构天然支持 SEO、屏幕阅读器、打印和 CSS 动画</li>
+    <li class="x">Canvas 渲染的 ECharts 无 DOM 节点，需额外 aria 标注</li>
+    <li>CSS 方案配色精确可控，不会出现 LLM 随机选色导致的不一致</li>
+    <li class="x">ECharts 在 LLM 生成时容易出现配色过亮/过暗/过饱和问题</li>
+  </ul>
+</div>
+
+<script>
+  // 初始化 ECharts 旭日图（用纯占位 value，避免显示错误）
+  var chart = echarts.init(document.getElementById('chart-sunburst-echarts'));
+  chart.setOption({
+    type: 'sunburst',
+    data: [
+      { name: 'D1\n方向与技术标尺', children: [
+        { name: 'B1.1\n主动问题识别', children: [{ name: 'E1.1.1' },{ name: 'E1.1.2' }] },
+        { name: 'B1.2\n高目标自驱', children: [{ name: 'E1.2.1' }] }
+      ]},
+      { name: 'D2\n内驱与主动闭环', children: [
+        { name: 'B2.1\n主动拆解', children: [{ name: 'E2.1.1' },{ name: 'E2.1.2' }] }
+      ]},
+      { name: 'D3\n韧性与稳定推进', children: [
+        { name: 'B3.1\n回退恢复', children: [{ name: 'E3.1.1' }] }
+      ]},
+      { name: 'D4\n学习敏捷', children: [
+        { name: 'B4.1\n跨域学习', children: [{ name: 'E4.1.1' }] }
+      ]},
+      { name: 'D5\n工程基础', children: [
+        { name: 'B5.1\nCS 基础', children: [{ name: 'E5.1.1' }] }
+      ]},
+      { name: 'D6\n协作与交付', children: [
+        { name: 'B6.1\n沟通清晰', children: [{ name: 'E6.1.1' }] }
+      ]}
+    ],
+    radius: ['15%', '88%'],
+    label: { rotate: 'radial', fontSize: 11, color: '#fff' },
+    itemStyle: { borderRadius: 4 }
+  });
+</script>
+
+</body>
+</html>
