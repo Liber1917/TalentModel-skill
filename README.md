@@ -58,14 +58,14 @@ Agents can then invoke the skill as a native MCP tool without reading SKILL.md d
 ```
 TalentModel-skill/
 ├── SKILL.md                        # ← Load this
+├── assets/
+│   ├── config_template.txt         # 配置模板
+│   └── echarts.min.js               # ECharts 图表库（离线渲染）
 ├── test_cases/
-│   ├── TEST_CASES.md               # Validation test suite
-│   └── ENTERPRISE_REFERENCE.md      # Valid company list by type
-├── prompts/
-│   ├── config_wizard.md
-│   └── report_builder.md
-└── templates/
-    └── report.html
+│   ├── TEST_CASES.md               # 验证测试用例
+│   └── ENTERPRISE_REFERENCE.md      # 按类型分类的验证公司参考列表
+└── examples/
+    └── ai_infra_campus.txt          # 示例输出
 ```
 
 **Raw content URLs (fetch directly):**
@@ -216,6 +216,14 @@ CHART_RENDER = offline
 
 ## 更新日志
 
+### v1.1.0 (2026.04)
+
+- 🛡️ 6个硬约束失败模式（技能维度陷阱、校招/社招边界、图表类型禁止、图表量化幻觉等）
+- 📋 报告生成后自检清单
+- ⚡ For Agents & LLMs 区块，含 MCP 集成说明
+- 🎨 HTML 模板嵌入 ECharts 配置示例
+- 🔍 ENTERPRISE_REFERENCE.md — 四类企业参考库（互联网大厂/中型成长期/垂直龙头/传统行业）
+
 ### v1.0.0 (2026.04)
 
 - 🎉 初始版本发布
@@ -234,16 +242,18 @@ CHART_RENDER = offline
 
 ```
 TalentModel-skill/
-├── SKILL.md              # 技能入口点
-├── README.md             # 本文件
-├── config_template.txt   # 配置模板
-├── prompts/             # 提示模板
-│   ├── config_wizard.md  # 配置向导
-│   └── report_builder.md # 报告生成器
-├── templates/            # HTML 模板
-│   └── report.html       # 报告模板
-└── examples/             # 示例
-    └── ai_infra_campus.txt
+├── SKILL.md                        # 技能入口点（Agent 必读）
+├── README.md                       # 中文说明文档
+├── README_en.md                    # English documentation
+├── assets/                         # 静态资源
+│   ├── config_template.txt          # 配置模板
+│   └── echarts.min.js               # ECharts 图表库（离线渲染）
+├── test_cases/                     # 验证测试
+│   ├── TEST_CASES.md               # 测试用例配置
+│   ├── ENTERPRISE_REFERENCE.md      # 验证公司参考列表（按类型分类）
+│   └── run_new_flow_test.py         # 自动化测试运行器
+└── examples/                       # 示例
+    └── ai_infra_campus.txt          # 校招 AI Infra 岗位示例报告
 ```
 
 ---
