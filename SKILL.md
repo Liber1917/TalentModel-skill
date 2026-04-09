@@ -2,12 +2,48 @@
 name: talent-model
 description: "岗位胜任力建模工具：通过交互式配置向导，基于候选人画像而非技能清单，生成三层结构（核心维度→可观察行为→角色证据）的胜任力模型报告。支持HTML可视化输出。Competency model builder with interactive config, MECE structure, official validation, and HTML reports."
 license: MIT
-compatibility: "Requires web access for official validation; echarts.min.js included for offline visualization"
-allowed-tools: Read Write Bash WebFetch
+
+# MCP Server Configuration (for agent harness integration)
+# Add to your ~/.workbuddy/mcp.json:
+# {
+#   "mcpServers": {
+#     "talent-model": {
+#       "command": "npx",
+#       "args": ["-y", "@codebuddy/talent-model-mcp"]
+#     }
+#   }
+# }
+# Agents can then call this skill as a native MCP tool.
+
+compatibility:
+  web-access: required    # Step 3.5 needs web fetch for company validation
+  offline-render: true    # echarts.min.js bundled for HTML export
+  mcp-native: true        # callable as MCP tool if server is configured
+
+allowed-tools:
+  Read:       mandatory   # read SKILL.md, prompts/, templates/
+  Write:      mandatory   # write report output
+  Bash:       optional    # copy echarts.min.js, run local servers
+  WebFetch:   mandatory   # fetch job pages for validation (Step 3.5)
+  WebSearch:  optional    # research company context
+
+workflow:
+  type: interactive       # guided 10-step wizard (cannot skip)
+  output: html            # primary output format
+  validation: post-hoc    # self-check checklist after generation
+
+constraints:
+  chart-types: [sunburst, treemap, scatter, tree]
+  chart-forbidden: [radar, bar, line, pie]
+  chart-no-quantitative: true    # no value:/min:/max: in echarts config
+  structure: three-level         # Dimension → Behavior → Evidence
+
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   category: "hr"
   emoji: "🎯"
+  author: "Liber1917"
+  repository: "https://github.com/Liber1917/TalentModel-skill"
 ---
 
 # Competency Model Skill — 岗位胜任力建模

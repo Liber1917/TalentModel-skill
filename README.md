@@ -40,6 +40,20 @@ Use the TalentModel-skill. Target role: [岗位名称], Level: [校招/实习/�
 - **3-level structure is mandatory.** Dimension → Observable Behavior → Evidence. Never skip levels or collapse them.
 - **Verify before reporting.** Check the post-generation checklist in `SKILL.md` before returning the report.
 
+**MCP integration (optional):**
+If your agent harness supports MCP, add this to your `mcp.json`:
+```json
+{
+  "mcpServers": {
+    "talent-model": {
+      "command": "npx",
+      "args": ["-y", "@codebuddy/talent-model-mcp"]
+    }
+  }
+}
+```
+Agents can then invoke the skill as a native MCP tool without reading SKILL.md directly.
+
 **File layout:**
 ```
 TalentModel-skill/
