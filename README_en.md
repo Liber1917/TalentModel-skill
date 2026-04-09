@@ -12,12 +12,7 @@
 
 **Live Preview (exportable as SVG/PNG):** [assets/agent-workflow.html](assets/agent-workflow.html)
 
-<!--
-  GitHub README does not execute ECharts scripts — visit the live preview above.
-  Right-click chart in browser → Save as PNG, or use export tools for SVG.
-  Screenshot fallback (replace with actual path):
-  ![Agent Workflow](assets/agent-workflow.png)
--->
+![Agent Recommended Workflow](assets/agent-workflow.svg)
 
 ---
 

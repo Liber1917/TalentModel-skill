@@ -12,12 +12,7 @@
 
 **在线预览（可导出 SVG/PNG）：** [assets/agent-workflow.html](assets/agent-workflow.html)
 
-<!--
-  GitHub README 不执行 ECharts 脚本，请访问上方 agent-workflow.html 在线预览完整交互图表。
-  可在浏览器中右键图表 → 存储为 PNG，或使用导出工具生成 SVG。
-  截图备选（请替换为实际截图路径）：
-  ![Agent 工作流](assets/agent-workflow.png)
--->
+![Agent 推荐工作流](assets/agent-workflow.svg)
 
 ---
 
