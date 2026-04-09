@@ -30,13 +30,14 @@ Use the TalentModel-skill. Target role: [岗位名称], Level: [校招/实习/�
 **Optional config:**
 | Parameter | Default | Notes |
 |-----------|---------|-------|
-| `OUTPUT_FORMAT` | `html` | HTML report with 4 charts |
+| `OUTPUT_FORMAT` | `html` | HTML报告（含4种图表），唯一输出格式 |
 | `SELF_CHECK_MATRIX` | `false` | 3-tier self-assessment table |
 | `CHART_RENDER` | `offline` | echarts bundled locally |
 
 **Key constraints you must follow:**
 - **No radar/bar/line/pie charts.** Only `sunburst`, `treemap`, `scatter`, `tree`.
 - **No quantitative values in charts.** No `value:` numbers, no axis `min/max`, no percentages — competence models have no measurement data.
+- **Mandatory intermediate artifact verification.** Signal table (≥15 rows with judgment + demotion reason columns) and URL validation (WebFetch confirmed) must pass before drafting dimensions.
 - **3-level structure is mandatory.** Dimension → Observable Behavior → Evidence. Never skip levels or collapse them.
 - **Verify before reporting.** Check the post-generation checklist in `SKILL.md` before returning the report.
 
@@ -72,8 +73,8 @@ TalentModel-skill/
 
 **Raw content URLs (fetch directly):**
 - SKILL.md: `https://raw.githubusercontent.com/Liber1917/TalentModel-skill/master/SKILL.md`
-- TEST_CASES: `https://raw.githubusercontent.com/Liber1917/TalentModel-skill/master/test_cases/TEST_CASES.md`
-- ENTERPRISE_REFERENCE: `https://raw.githubusercontent.com/Liber1917/TalentModel-skill/master/test_cases/ENTERPRISE_REFERENCE.md`
+- TEST_CASES: `https://raw.githubusercontent.com/Liber1917/TalentModel-skill/master/references/TEST_CASES.md`
+- ENTERPRISE_REFERENCE: `https://raw.githubusercontent.com/Liber1917/TalentModel-skill/master/references/ENTERPRISE_REFERENCE.md`
 
 ---
 
@@ -85,10 +86,10 @@ TalentModel-skill/
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/TalentModel-skill.git
+git clone https://github.com/Liber1917/TalentModel-skill.git
 
 # 或下载 ZIP
-# https://github.com/yourusername/TalentModel-skill/archive/refs/heads/main.zip
+# https://github.com/Liber1917/TalentModel-skill/archive/refs/heads/main.zip
 ```
 
 ### 安装
@@ -125,10 +126,12 @@ cp -r TalentModel-skill <your-agent>/skills/talent-model
 |------|------|
 | 🎯 **交互式配置向导** | 10步引导式配置，带智能提示和意图识别 |
 | 📐 **MECE 结构建模** | 6维胜任力框架，避免技能树陷阱 |
-| ✅ **官网验证** | 基于真实招聘页面交叉验证胜任力模型 |
+| ✅ **官网验证** | 基于真实招聘页面交叉验证胜任力模型（URL 强制 WebFetch 验证） |
 | 📊 **4种可视化图表** | 旭日图、矩形树图、散点图、能力树 |
 | 🧭 **人才分型象限** | 识别潜力型/达标型/突出型/平台型人才 |
 | 📝 **行为锚点表格** | 可观察行为的具体判定标准 |
+| 🔒 **强制中间产物验证** | Step 3.5 信号归纳表 + Step 4 维度黑名单扫描 + Step 9 报告自检，三阶段门控 |
+| 🛡️ **防幻觉约束** | 维度黑名单扫描、URL 验证硬约束、跳过验证阻断 |
 
 ### 可选功能
 
@@ -155,7 +158,7 @@ cp -r TalentModel-skill <your-agent>/skills/talent-model
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| `OUTPUT_FORMAT` | 输出格式 | `html` |
+| `OUTPUT_FORMAT` | 输出格式 | `html`（已锁定，不可更改） |
 | `SELF_CHECK_MATRIX` | 自测矩阵 | `false` |
 | `CHART_RENDER` | 图表渲染方式 | `offline` |
 
@@ -218,7 +221,28 @@ CHART_RENDER = offline
 
 ## 更新日志
 
-### v1.1.0 (2026.04)
+### v1.3.0 (2026.04)
+
+> **Agent 约束工程专项升级**
+
+**P0 修复：**
+- 🔒 **HTML-only 输出锁定** — 移除 Markdown 和面试评分表选项，所有输出强制为 HTML 报告（含4种图表）
+- 🛡️ **消除隐性模板风险** — 移除 Step 4 中"参考结构"作为预设维度的暗示，改为强制基于信号归纳表起草
+- 📋 **信号归纳表结构化强制模板** — 必须输出 ≥15 行表格，含"判断"列和"降级原因"列，禁止仅用文字描述
+- 🔗 **验证链接 WebFetch 硬约束** — 禁止生成未验证的 URL，禁止推测/编造链接，规定标准降级策略
+
+**P1 增强：**
+- ✅ **中间产物验证机制** — Step 3.5 / Step 4 / Step 9 三阶段验证，维度黑名单关键词扫描
+- 🌐 **WebFetch 失败标准降级行为** — 定义无公开入口时的明确处理方式
+- 🧭 **维度分类 Few-shot 示例** — 提供特质 vs 技能/工具/行为的判断标准和示例
+- 📝 **失败模式防范扩展** — 新增"验证链接幻觉"和"跳过中间验证"两类防范条目
+
+**其他：**
+- workflow.type 改为 `pipeline`，validation 改为 `mandatory`
+- Q8 输出格式描述更新，Q8.5 限定语移除
+- 完整示例对话更新以反映新流程
+
+### v1.2.0 (2026.04)
 
 - 🛡️ 6个硬约束失败模式（技能维度陷阱、校招/社招边界、图表类型禁止、图表量化幻觉等）
 - 📋 报告生成后自检清单
@@ -246,16 +270,16 @@ CHART_RENDER = offline
 TalentModel-skill/
 ├── SKILL.md                        # 技能入口点（Agent 必读）
 ├── README.md                       # 中文说明文档
-├── README_en.md                    # English documentation
 ├── assets/                         # 静态资源
+│   ├── echarts.min.js               # ECharts 图表库（离线渲染）
 │   ├── config_template.txt          # 配置模板
-│   └── echarts.min.js               # ECharts 图表库（离线渲染）
-├── test_cases/                     # 验证测试
-│   ├── TEST_CASES.md               # 测试用例配置
-│   ├── ENTERPRISE_REFERENCE.md      # 验证公司参考列表（按类型分类）
-│   └── run_new_flow_test.py         # 自动化测试运行器
-└── examples/                       # 示例
-    └── ai_infra_campus.txt          # 校招 AI Infra 岗位示例报告
+│   └── examples/                    # 示例文件
+│       ├── ai_infra_campus.txt      # 示例对话输出
+│       └── sunburst-comparison*.html # 图表方案对比示例
+└── references/                     # 参考文档（按需加载）
+    ├── html_template.md              # HTML 报告模板（含 CSS/JS）
+    ├── enterprise_reference.md        # 按类型分类的验证公司参考列表
+    └── test_cases.md                # 验证测试用例
 ```
 
 ---
