@@ -44,7 +44,7 @@ Use the TalentModel-skill. Target role: [岗位名称], Level: [校招/实习/�
 |-----------|---------|-------|
 | `OUTPUT_FORMAT` | `html` | HTML报告（含4种图表），唯一输出格式 |
 | `SELF_CHECK_MATRIX` | `false` | 3-tier self-assessment table |
-| `CHART_RENDER` | `offline` | echarts bundled locally |
+| `CHART_RENDER` | `cdn` | echarts via CDN with auto-fallback (jsdelivr → unpkg) |
 
 **Key constraints you must follow:**
 - **No radar/bar/line/pie charts.** Only `sunburst`, `treemap`, `scatter`, `tree`.
@@ -186,7 +186,7 @@ USE_CASE = 招聘筛选
 VALIDATION_COMPANIES = OpenAI, NVIDIA, ByteDance, 阿里云
 OUTPUT_FORMAT = html
 SELF_CHECK_MATRIX = true
-CHART_RENDER = offline
+CHART_RENDER = cdn  # 推荐：CDN自动降级(jsdelivr→unpkg)，可选offline(内嵌本地)
 ```
 
 ---
@@ -233,6 +233,20 @@ CHART_RENDER = offline
 ---
 
 ## 更新日志
+
+### v1.3.1 (2026.04)
+
+> **兼容性修复专项**
+
+**问题修复：**
+- 🔗 **AI 访问支持** — 在 metadata 中添加 `raw-access` 字段，明确提供 `raw.githubusercontent.com` 访问路径，解决 GitHub API 受限场景下的内容获取问题
+- 🌐 **CDN 自动降级** — HTML 模板内置 CDN 自动降级逻辑（jsdelivr → unpkg → 本地文件），确保在不同网络环境下图表均能正常加载
+- 🖼️ **导出格式完善** — 为所有图表区域添加 JPEG 导出按钮，增强导出功能的错误处理和日志
+
+**增强：**
+- SKILL.md metadata 新增 `raw-access` 字段
+- html_template.md 新增 CDN 自动降级加载脚本
+- 导出函数增强：添加错误处理、console 日志、日期时间戳命名
 
 ### v1.3.0 (2026.04)
 

@@ -44,7 +44,7 @@ Use the TalentModel-skill. Target role: [role name], Level: [校招/实习/资�
 |-----------|---------|-------|
 | `OUTPUT_FORMAT` | `html` | HTML report with 4 charts |
 | `SELF_CHECK_MATRIX` | `false` | 3-tier self-assessment table |
-| `CHART_RENDER` | `offline` | echarts bundled locally |
+| `CHART_RENDER` | `cdn` | echarts via CDN with auto-fallback (jsdelivr → unpkg) |
 
 **Key constraints you must follow:**
 - **No radar/bar/line/pie charts.** Only `sunburst`, `treemap`, `scatter`, `tree`.
@@ -178,7 +178,7 @@ USE_CASE = 招聘筛选
 VALIDATION_COMPANIES = OpenAI, NVIDIA, ByteDance, Alibaba Cloud
 OUTPUT_FORMAT = html
 SELF_CHECK_MATRIX = true
-CHART_RENDER = offline
+CHART_RENDER = cdn  # Recommended: CDN auto-fallback (jsdelivr→unpkg), optional: offline (bundled)
 ```
 
 ---
@@ -225,6 +225,20 @@ When **HTML report** output is selected:
 ---
 
 ## Changelog
+
+### v1.3.1 (2026.04)
+
+> **Compatibility Fixes**
+
+**Bug Fixes:**
+- 🔗 **AI Access Support** — Added `raw-access` field in metadata to explicitly provide `raw.githubusercontent.com` path, resolving content retrieval issues when GitHub API is restricted
+- 🌐 **CDN Auto-Fallback** — HTML template includes CDN auto-fallback logic (jsdelivr → unpkg → local file), ensuring charts load properly in different network environments
+- 🖼️ **Export Format Enhancement** — Added JPEG export button for all chart areas, enhanced export function with error handling and logging
+
+**Enhancements:**
+- SKILL.md metadata now includes `raw-access` field
+- html_template.md includes CDN auto-fallback loading script
+- Export function enhanced with error handling, console logging, and date-timestamp naming
 
 ### v1.1.0 (2026.04)
 

@@ -50,6 +50,7 @@
       <div class="chart-wrapper">
         <div class="chart-toolbar">
           <button class="chart-export-btn" onclick="exportChart('chart-sunburst', 'png')" title="导出PNG">PNG</button>
+          <button class="chart-export-btn" onclick="exportChart('chart-sunburst', 'jpeg')" title="导出JPEG">JPEG</button>
           <button class="chart-export-btn" onclick="exportChart('chart-sunburst', 'svg')" title="导出SVG">SVG</button>
         </div>
         <div id="chart-sunburst" class="chart-container">
@@ -151,6 +152,7 @@
       <div class="chart-wrapper">
         <div class="chart-toolbar">
           <button class="chart-export-btn" onclick="exportChart('chart-treemap', 'png')" title="导出PNG">PNG</button>
+          <button class="chart-export-btn" onclick="exportChart('chart-treemap', 'jpeg')" title="导出JPEG">JPEG</button>
           <button class="chart-export-btn" onclick="exportChart('chart-treemap', 'svg')" title="导出SVG">SVG</button>
         </div>
         <div id="chart-treemap" class="chart-container">
@@ -273,6 +275,10 @@
           <button class="chart-export-btn" onclick="exportChart('chart-scatter', 'png')" title="导出PNG">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             PNG
+          </button>
+          <button class="chart-export-btn" onclick="exportChart('chart-scatter', 'jpeg')" title="导出JPEG">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            JPEG
           </button>
           <button class="chart-export-btn" onclick="exportChart('chart-scatter', 'svg')" title="导出SVG">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -398,6 +404,7 @@
       <div class="chart-wrapper">
         <div class="chart-toolbar">
           <button class="chart-export-btn" onclick="exportChart('chart-tree', 'png')" title="导出PNG">PNG</button>
+          <button class="chart-export-btn" onclick="exportChart('chart-tree', 'jpeg')" title="导出JPEG">JPEG</button>
           <button class="chart-export-btn" onclick="exportChart('chart-tree', 'svg')" title="导出SVG">SVG</button>
         </div>
         <div id="chart-tree" class="chart-container">
@@ -584,8 +591,43 @@
   
   <footer>...</footer>
   
-  <!-- ECharts + 图表初始化脚本 -->
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <!-- ECharts + 图表初始化脚本（已配置CDN自动降级） -->
+  <script>
+    // CDN 自动降级加载：jsdelivr → unpkg → 本地文件
+    (function() {
+      var cdnList = [
+        'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js',
+        'https://unpkg.com/echarts@5.4.3/dist/echarts.min.js'
+      ];
+      var localPath = 'assets/echarts.min.js'; // 本地内嵌备用路径
+      var loadIndex = 0;
+
+      function loadScript(src, onSuccess, onError) {
+        var script = document.createElement('script');
+        script.src = src;
+        script.onload = onSuccess;
+        script.onerror = onError;
+        document.head.appendChild(script);
+      }
+
+      function tryNext() {
+        if (loadIndex < cdnList.length) {
+          loadScript(cdnList[loadIndex++], function() {
+            console.log('[ECharts] Loaded from CDN: ' + cdnList[loadIndex - 1]);
+          }, tryNext);
+        } else {
+          // 降级到本地文件
+          loadScript(localPath, function() {
+            console.log('[ECharts] Loaded from local fallback');
+          }, function() {
+            console.error('[ECharts] Failed to load ECharts from all sources');
+          });
+        }
+      }
+
+      tryNext();
+    })();
+  </script>
   <script>...</script>
 </body>
 </html>
@@ -709,29 +751,41 @@
 
 **导出功能 JS 实现：**
 ```javascript
-// 使用 ECharts 内置的导出功能
+// ECharts 图表导出功能（支持 PNG / SVG / JPEG 三种格式）
 function exportChart(chartId, format) {
-  const chart = echarts.getInstanceByDom(document.getElementById(chartId));
-  if (!chart) return;
-  
-  const formats = {
-    png: { type: 'png', quality: 1 },
-    jpeg: { type: 'jpeg', quality: 0.8 },
+  var chart = echarts.getInstanceByDom(document.getElementById(chartId));
+  if (!chart) {
+    console.error('[Export] Chart instance not found: ' + chartId);
+    return;
+  }
+
+  var formats = {
+    png: { type: 'png', pixelRatio: 2, quality: 1 },
+    jpeg: { type: 'jpeg', pixelRatio: 2, quality: 0.8 },
     svg: { type: 'svg' }
   };
-  
-  const option = formats[format];
-  if (!option) return;
-  
-  // 生成数据URL或SVG字符串
-  const url = chart.getDataURL(option);
-  
-  // 自动下载
-  const link = document.createElement('a');
-  link.download = `${chartId}_${Date.now()}.${format}`;
-  link.href = url;
-  link.click();
+
+  var option = formats[format];
+  if (!option) {
+    console.error('[Export] Unsupported format: ' + format);
+    return;
+  }
+
+  try {
+    var url = chart.getDataURL(option);
+    var link = document.createElement('a');
+    var timestamp = new Date().toISOString().slice(0, 10);
+    link.download = chartId + '_' + timestamp + '.' + format;
+    link.href = url;
+    link.click();
+    console.log('[Export] Successfully exported ' + format.toUpperCase() + ' for ' + chartId);
+  } catch (e) {
+    console.error('[Export] Failed to export chart:', e);
+  }
 }
+
+// 全局导出函数（供按钮 onclick 调用）
+window.exportChart = exportChart;
 ```
 
 **人才分型表格样式规范：**

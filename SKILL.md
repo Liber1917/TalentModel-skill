@@ -19,6 +19,10 @@ compatibility:
   web-access: required    # Step 3.5 needs web fetch for company validation
   offline-render: true    # CDN ECharts, cached after first load
   mcp-native: true        # callable as MCP tool if server is configured
+  # 图表渲染兼容性说明：
+  # - 主要CDN: jsdelivr (https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js)
+  # - 备用CDN: unpkg (https://unpkg.com/echarts@5.4.3/dist/echarts.min.js)
+  # - 本地内嵌: assets/echarts.min.js（完全离线可用）
 
 allowed-tools:
   Read:       mandatory   # read SKILL.md and asset files
@@ -43,11 +47,13 @@ constraints:
   color-consistency: true         # 全局配色标准：同一维度(D1-D6)在所有图表中颜色必须一致
 
 metadata:
-  version: "1.3.0"
+  version: "1.3.1"
   category: "hr"
   emoji: "🎯"
   author: "Liber1917"
   repository: "https://github.com/Liber1917/TalentModel-skill"
+  # AI访问说明：当GitHub API受限或无法连接时，可直接通过以下URL获取SKILL.md内容
+  raw-access: "https://raw.githubusercontent.com/Liber1917/TalentModel-skill/master/SKILL.md"
 ---
 
 # Competency Model Skill — 岗位胜任力建模
@@ -265,10 +271,13 @@ metadata:
 #### Q8.5: 图表渲染方式
 ```
 选项：
-  - CDN 加载（推荐）— 使用 jsdelivr CDN，报告保持单文件，初次加载需联网
+  - CDN 加载（推荐）— 使用 jsdelivr CDN + unpkg 备用，报告保持单文件
   - 内嵌本地 — 直接把 echarts.min.js 内容内联到 HTML（文件更大但完全离线）
 
-提示：完全离线版可分享给无网络环境的同事；CDN 版文件更小、图表版本更新。
+提示：
+  - CDN版：首次加载需联网，已内置自动降级（jsdelivr → unpkg）
+  - 完全离线版：推荐用于无网络环境的同事分享
+  - 本地文件路径：assets/echarts.min.js（内嵌时使用）
 ```
 
 #### Q9: 语言
@@ -520,8 +529,14 @@ metadata:
 > **原因**：大模型生成"胜任力+自评"类内容时，训练数据中高频出现雷达图，导致统计惯性压倒规范要求。同时大模型倾向于为图表填写精确数值（权重/百分比/坐标），这是幻觉高发区。使用 CSS/纯HTML 方案可以从根本上规避数据幻觉。以上禁止项是经过测试验证的失败模式，必须硬性约束。
 
 **HTML依赖说明：**
-- ECharts 通过 CDN 引入 `<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>`
-- 无需分发 `echarts.min.js`，HTML 保持单文件即可
+- ECharts CDN（已配置自动降级）：
+  ```html
+  <!-- 主要CDN：jsdelivr -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <!-- 备用CDN：unpkg（当jsdelivr不可用时自动fallback） -->
+  ```
+- 如需完全离线版，可将 `assets/echarts.min.js` 内容内联到 `<script>` 标签内
+- 无需单独分发 `echarts.min.js`，HTML 保持单文件即可
 
 **操作步骤：**
 ```bash
@@ -532,8 +547,11 @@ write_to_file(filePath="{workspace}/{ROLE_NAME}_胜任力模型.html", content=h
 **使用说明（告知用户）：**
 - 用浏览器打开HTML文件即可查看完整可视化效果
 - 首次打开需要联网（CDN 加载 ECharts），之后可断网使用
-- 报告完全离线可用（ECharts 缓存后）
-- 每个图表区域提供导出按钮，支持导出为 PNG/SVG/JPEG 格式
+- 已内置CDN自动降级（jsdelivr → unpkg），网络受限环境下也能正常加载
+- 每个图表区域右上角提供导出按钮，支持导出为 **PNG** / **SVG** / **JPEG** 格式
+  - PNG：适合高质量打印和文档嵌入
+  - SVG：适合矢量编辑（Illustrator、Figma等）
+  - JPEG：适合快速分享和PPT插入
 
 ---
 
