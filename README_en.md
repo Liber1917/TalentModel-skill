@@ -134,6 +134,10 @@ Or describe your request directly:
 | Feature | Description |
 |---------|-------------|
 | 🎯 **Interactive Config Wizard** | 10-step guided config with smart hints and intent recognition |
+| 🧠 **Phase 0L Lacanian Clinical Profiling** | Pre-JD linguistic structure analysis, captures candidate's unconscious contradictions and desire positioning |
+| 🤖 **Phase 1 Agent Swarm (6 parallel agents)** | 女娲-style 6-agent parallel research (books/interview/market JD/external eval/decision/timeline), integrated by Agent 2 with Phase 0L profile |
+| 🛑 **Dual Mandatory Checkpoints (Phase 1.5 / 2.5)** | Research Review and extraction confirmation require explicit user approval before proceeding |
+| 🔄 **Phase 5 Dual-Agent Refinement** | Refinement Agent + Criticism Agent cross-review to eliminate omissions and over-abstraction |
 | 📐 **MECE Structure Modeling** | 6-dimension competency framework, avoids skills-tree trap |
 | ✅ **Official Website Validation** | Cross-validated against real job postings |
 | 📊 **4 Visualizations** | Sunburst, Treemap, Scatter, Competency Tree |
@@ -226,6 +230,23 @@ When **HTML report** output is selected:
 
 ## Changelog
 
+### v2.0.0 (2026.04)
+
+> **Architecture Refactor — 女娲 Methodology + Lacanian Clinical Profiling + Agent Team Orchestration**
+
+**Methodology Integration:**
+- 🧠 **Phase 0L Lacanian Clinical Profiling** — Pre-JD linguistic structure analysis via unstructured clinical interview: contradictions, gaps, symbolic order positioning, desire structure reveal competency signals invisible in JD text
+- 🤖 **Phase 1 Agent Swarm (女娲-style 6 parallel agents)** — Books research, interview analysis, market JD, external evaluation, decision inference, timeline mapping — 6 agents run in parallel; Agent 2 integrates Phase 0L profile as core input
+- 🛑 **Phase 1.5 Research Review Checkpoint** — Agent 7 reviews research quality; user must confirm before proceeding
+- 🔄 **Phase 2.5 Extraction Checkpoint** — Dimension draft reviewed for alignment with candidate profile
+- 🔍 **Phase 5 Dual-Agent Refinement** — Refinement Agent + Criticism Agent cross-review eliminates omissions and over-abstraction
+
+**Engineering Norms:**
+- 📋 **AGENT.md** — Agent development norms with commit trailer规范 (`Agent-Task`/`Agent-Model`), feature branch strategy, PR template (Phase Checkpoint checklist)
+- 📂 **New Reference Files** — `lacanian-methodology.md` (Lacan's three orders + clinical interview technique + signal transformation rules), `extraction-framework.md` (triple verification + contradiction handling + demotion vocabulary)
+
+**All original constraints preserved:** dimension hierarchy / campus boundary / technical term demotion / chart types / chart quant prohibition / self-check list / signal table
+
 ### v1.3.1 (2026.04)
 
 > **Compatibility Fixes**
@@ -267,17 +288,25 @@ When **HTML report** output is selected:
 ```
 TalentModel-skill/
 ├── SKILL.md                        # Skill entry point (Agent: read this)
+├── AGENT.md                        # Agent development norms (commit/branch/PR template)
 ├── README.md                       # Chinese documentation
 ├── README_en.md                    # English documentation
+├── .github/
+│   └── pull_request_template/
+│       └── agent.md                  # PR template (with Phase Checkpoint checklist)
 ├── assets/                         # Static assets
 │   ├── config_template.txt          # Configuration template
-│   └── echarts.min.js               # ECharts library (offline rendering)
-├── test_cases/                     # Validation tests
-│   ├── TEST_CASES.md               # Test case configuration
-│   ├── ENTERPRISE_REFERENCE.md      # Validation company reference (by type)
-│   └── run_new_flow_test.py         # Automated test runner
-└── examples/                       # Samples
-    └── ai_infra_campus.txt          # Campus AI Infra role sample report
+│   ├── echarts.min.js               # ECharts library (offline rendering)
+│   ├── agent-workflow.html          # Agent recommended workflow (exportable as SVG/PNG)
+│   └── examples/                    # Samples
+│       ├── ai_infra_campus.txt      # Campus AI Infra role sample report
+│       └── sunburst-comparison*.html # Chart comparison examples
+└── references/                     # Reference docs (load as needed)
+    ├── html_template.md              # HTML report template (CSS/JS)
+    ├── enterprise_reference.md        # Validation company reference (by type)
+    ├── test_cases.md               # Validation test suite
+    ├── lacanian-methodology.md       # Lacanian profiling methodology (v2.0)
+    └── extraction-framework.md        # Competency extraction framework (v2.0)
 ```
 
 ---
