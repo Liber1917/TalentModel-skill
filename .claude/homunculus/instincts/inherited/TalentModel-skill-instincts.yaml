@@ -1,0 +1,269 @@
+# Instincts generated from https://github.com/Liber1917/TalentModel-skill
+# Generated: 2026-05-08T07:35:24.015Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: TalentModel-skill-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Liber1917/TalentModel-skill
+---
+
+# TalentModel Skill Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat, docs, fix
+
+## Evidence
+
+- 3 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat(skill): v2.0 重构 — 融合女娲造人术 + 拉康式临床画像 + Agent Team, docs: 更新 README 双语文档，补充 v2.0 新增内容\n\n- 功能特性表：补充 Phase 0L/Agent Swarm/Checkpoint/Dual-Agent 精炼\n- 项目结构：补充 AGENT.md、.github/PR template、lacanian/extraction-framework\n- 更新日志：v2.0.0 条目（含方法论融合说明）\n\nAgent-Task: README v2.0 文档更新\nAgent-Model: gemini-sonnet-4
+
+---
+id: TalentModel-skill-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Liber1917/TalentModel-skill
+---
+
+# TalentModel Skill Commit Length
+
+## Action
+
+Write detailed commit messages (~229 characters for first line)
+
+## Evidence
+
+- Average commit message length: 229 chars
+- Based on 3 commits
+
+---
+id: TalentModel-skill-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Liber1917/TalentModel-skill
+---
+
+# TalentModel Skill Naming Files
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: PascalCase
+
+---
+id: TalentModel-skill-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Liber1917/TalentModel-skill
+---
+
+# TalentModel Skill Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: TalentModel-skill-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Liber1917/TalentModel-skill
+---
+
+# TalentModel Skill Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: TalentModel-skill-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Liber1917/TalentModel-skill
+---
+
+# TalentModel Skill Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: TalentModel-skill-workflow-documentation-update
+trigger: "when doing documentation update"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Liber1917/TalentModel-skill
+---
+
+# TalentModel Skill Workflow Documentation Update
+
+## Action
+
+Follow the documentation-update workflow:
+1. Edit or add documentation files (e.g., README, methodology docs, framework docs).
+2. Update feature tables, project structure sections, and changelogs.
+3. Add or update PR templates and development guidelines if needed.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: README.md, README_en.md, references/*.md
+
+---
+id: talentmodel-skill-instinct-naming-conventions
+trigger: "When creating or renaming files, functions, classes, or constants in the codebase"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Liber1917/TalentModel-skill
+---
+
+# Talentmodel Skill Instinct Naming Conventions
+
+## Action
+
+Use PascalCase for files and classes, camelCase for functions, and SCREAMING_SNAKE_CASE for constants
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions
+- TypeScript conventions inferred from repository analysis
+
+---
+id: talentmodel-skill-instinct-import-export-style
+trigger: "When importing or exporting modules in TypeScript files"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Liber1917/TalentModel-skill
+---
+
+# Talentmodel Skill Instinct Import Export Style
+
+## Action
+
+Use relative import paths and named exports
+
+## Evidence
+
+- Pattern in codeStyle.importStyle and exportStyle
+
+---
+id: talentmodel-skill-instinct-git-commit-format
+trigger: "When making a git commit"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: Liber1917/TalentModel-skill
+---
+
+# Talentmodel Skill Instinct Git Commit Format
+
+## Action
+
+Use Conventional Commits format with prefixes: feat, docs, or fix, followed by scope and a concise message
+
+## Evidence
+
+- Seen in commit: feat(skill): v2.0 重构 — 融合女娲造人术 + 拉康式临床画像 + Agent Team
+- Pattern in commits.prefixes
+
+---
+id: talentmodel-skill-instinct-git-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: Liber1917/TalentModel-skill
+---
+
+# Talentmodel Skill Instinct Git Commit Length
+
+## Action
+
+Aim for commit messages averaging around 229 characters, providing detailed context and bullet points for multi-part changes
+
+## Evidence
+
+- Pattern in commits.averageLength
+- Examples in commit messages
+
+---
+id: talentmodel-skill-instinct-testing-location
+trigger: "When adding or updating tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: Liber1917/TalentModel-skill
+---
+
+# Talentmodel Skill Instinct Testing Location
+
+## Action
+
+Place test files in a separate directory from source code
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
+---
+id: talentmodel-skill-instinct-documentation-update
+trigger: "When someone adds major features, refactors architecture, or introduces new methodologies that require documentation updates"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: Liber1917/TalentModel-skill
+---
+
+# Talentmodel Skill Instinct Documentation Update
+
+## Action
+
+Edit or add documentation files (README.md, README_en.md, references/*.md, .github/pull_request_template/*.md, AGENT.md, SKILL.md), update feature tables, project structure sections, and changelogs, and add or update PR templates and development guidelines if needed
+
+## Evidence
+
+- Workflow: documentation-update
+- Seen in commit: docs: 更新 README 双语文档，补充 v2.0 新增内容
+
