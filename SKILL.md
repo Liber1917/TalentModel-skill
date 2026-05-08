@@ -3,10 +3,27 @@ name: talent-model
 description: "岗位胜任力建模工具 v2.0：融合女娲造人术 + 拉康式临床画像 + Agent Team 并行处理。核心创新：Phase 0 提供拉康式非结构化入口，在分析JD之前先捕捉候选人的言语模式、欲望结构与矛盾张力。基于多元信号（三方信息×候选人自述×市场校准）生成三层胜任力模型（核心维度→可观察行为→角色证据），输出仅为 HTML 报告（含4种可视化图表）。Pipeline+Agent Swarm 双模式执行，强制 Phase 1.5 调研Review checkpoint + Phase 2.5 提炼确认 checkpoint + Phase 4 质量验证 + Phase 5 双Agent精炼。Trigger: 「建模」「胜任力」「人才画像」「岗位胜任力」「能力模型」「 competency」「帮我做个XX的胜任力模型」。"
 license: MIT
 
+# MCP Server Configuration (for agent harness integration)
+# Add to your ~/.workbuddy/mcp.json:
+# {
+#   "mcpServers": {
+#     "talent-model": {
+#       "command": "npx",
+#       "args": ["-y", "@codebuddy/talent-model-mcp"]
+#     }
+#   }
+# }
+# Agents can then call this skill as a native MCP tool.
+
 compatibility:
   web-access: required    # Step 3.5 needs web fetch for company validation
   offline-render: true    # CDN ECharts, cached after first load
   mcp-native: true        # callable as MCP tool if server is configured
+  # 图表渲染兼容性说明：
+  # - 主要CDN: jsdelivr (https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js)
+  # - 备用CDN: unpkg (https://unpkg.com/echarts@5.4.3/dist/echarts.min.js)
+  # - 本地内嵌: assets/echarts.min.js（完全离线可用）
+
 
 allowed-tools:
   Read:       mandatory   # read SKILL.md and asset files
@@ -20,6 +37,16 @@ workflow:
   type: pipeline+agent-swarm  # pipeline controls phases; agent-swarm drives Phase 1 parallel research
   output: html-only           # 唯一输出格式
   validation: mandatory       # Phase 1.5 + Phase 2.5 + Phase 4 强制 checkpoint
+
+constraints:
+  chart-types: [sunburst, treemap, scatter, tree]
+  chart-forbidden: [radar, bar, line, pie]
+  chart-no-quantitative: true    # no value:/min:/max: in echarts config
+  structure: three-level         # Dimension → Behavior → Evidence
+  # 旭日图只展示维度名称（二级行为折叠），禁止三级证据展开；能力树完整展示全部层级
+  sunburst-summarize: true       # 旭日图仅展示 D1-D6 维度名，二级行为折叠，三级证据不显示
+  tree-expand-full: true         # 能力树完整展开 D1-D2-D3 三层
+  color-consistency: true         # 全局配色标准：同一维度(D1-D6)在所有图表中颜色必须一致
 
 metadata:
   version: "2.0.0"
@@ -541,6 +568,17 @@ talent-model-workspace/
    - 单个公司独有的强场景词 → 降级为证据
 4. 每条信息标注来源URL
 
+**JD 访问优先级（按顺序尝试）：**
+   - 优先级1（校招场景必须）：官方校招页面 → 官方实习页面 → careers 主页
+   - 优先级2（社招场景）：社招岗位页（需标注"社招"）
+   - 优先级3（仅作上限参照）：具体 JD 页面（标注"⚠️上限参照"）
+
+**URL 验证硬约束：**
+   - ❌ 禁止生成未经 WebFetch 验证的 URL——每个链接必须用 WebFetch 确认 HTTP 200
+   - ❌ 禁止使用推测/编造的 URL——不确定入口时标记"未找到公开入口"而非猜测
+   - ✅ 降级策略：若无公开入口，从 CAREERS 主页采集，不虚构岗位信息
+   - ✅ 验证卡片格式：每条信息必须包含 `[验证URL]` `[入口类型]` `[检验点说明]` 三个字段
+
 输出：
 - 写入 talent-model-workspace/references/research/03-market-jd.md
 - 标注来源类型（一手JD / 二手分析 / 推测）
@@ -638,8 +676,34 @@ Agent 2 的输入包括 Phase 0L 的 `lacanian/intake.md`，其 prompt 调整为
 **关键规则**：
 - 表格行数 ≥ 15行
 - "判断"列仅允许填写：→核心维度 / →证据层 / →行业特定 / →行为层
-- 降级原因必填
+- 降级原因必填（判断为 →证据层 或 →行业特定 时必填，→核心维度 时填"—"）
 - **候选人自述列**：来自 Phase 0L intake.md 的信号（独立于市场JD）
+- **覆盖完整性**：必须覆盖全部 Q7 配置的验证公司（不遗漏任何一家）
+- 禁止跳过任何企业类型的信号采集
+- 禁止跳过任何判断为→证据层 或 →行业特定的行而不填降级原因
+
+**信号表产物验证（起草维度前必须完成）：**
+
+**验证点A：信号归纳表结构完整性**
+```
+检查项：
+  □ 行数 ≥ 15
+  □ 每行有"判断"列且仅填写：→核心维度 / →证据层 / →行业特定 / →行为层
+  □ 判断为 →证据层 或 →行业特定 的行，降级原因非空
+  □ 覆盖全部 Q7 配置的验证公司（不遗漏任何一家）
+
+若不满足 → 必须补充采集后再进入维度起草，禁止跳过。
+```
+
+**验证点B：验证链接 URL 真实性**
+```
+检查项：
+  □ 每个验证链接均已用 WebFetch 确认 HTTP 200
+  □ 校招/实习场景：所有链接均来自 campus/graduate/intern 入口
+  □ 无"未验证"/"推测"/"疑似"的 URL
+
+若发现无法验证的 URL → 标记为"未找到公开入口"，禁止虚构链接。
+```
 
 ### 2.2 心智模型三重验证（来自女娲 extraction-framework.md）
 
@@ -656,7 +720,38 @@ Agent 2 的输入包括 Phase 0L 的 `lacanian/intake.md`，其 prompt 调整为
 - 数量强制为 **6个，不多不少**
 - 维度命名使用**抽象特质词**
 - 每个维度必须有信号归纳表中的跨类型来源
-- 起草完成后，用 Few-shot 判断标准验证每个维度确实是"特质"而非"技能/行为/工具"
+- 起草完成后，用以下 Few-shot 判断标准验证每个维度确实是"特质"而非"技能/行为/工具"
+
+**维度分类 Few-shot 示例：**
+
+```
+判断"这是维度还是证据/行为"——关键特征：
+
+❌ 以下是一级维度的错误形式：
+  "系统抽象能力"        → 实质是技能，不是稳定特质
+  "Python/Go语言"        → 工具，直接等于证据
+  "高并发系统设计"        → 经验描述，不是特质
+  "项目管理能力"          → 行为，不是维度
+  "AI框架理解"           → 知识，不是特质
+
+✅ 以下是一级维度的正确形式（抽象特质词，可跨情境适用）：
+  "认知复杂度"          → 面对模糊性和多层约束时的处理能力
+  "内驱与目标感"         → 不依赖外部推动，自我设定高标准
+  "韧性"                → 在挫折/失败中持续推进的能力
+  "协作意识"             → 自然地建立信任、推动跨团队协作
+  "学习敏捷"             → 从新领域快速提取模式并迁移应用
+
+⚠️ 中间地带（需要仔细判断）：
+  "技术判断力" → 如果指"基于经验对技术方案做取舍"→偏向证据/行为；
+                 如果指"对复杂技术问题的本质洞察力"→可能是特质
+  "工程严谨性" → 如果指"编码习惯好"→行为层；
+                 如果指"在不确定条件下追求正确性的人格特质"→可能是特质
+
+判断标准：
+  1. 把这个词放到不同公司/行业，是否仍然有意义？（特质的跨情境性）
+  2. 这个词描述的是"人长期是什么样的"还是"人在这个岗位上做什么"？（特质 vs 行为）
+  3. 这个词能否用来区分不同类型的人，还是所有人差不多都有？（区分性）
+```
 
 ### 2.4 矛盾处理
 
@@ -741,6 +836,36 @@ Agent 2 的输入包括 Phase 0L 的 `lacanian/intake.md`，其 prompt 调整为
 
 ---
 
+## Phase 3.5: 边界精炼（扬弃反思）
+
+**在 Phase 4 质量验证之前**，对已构建的胜任力模型进行批判性校验：
+
+### 「扬」— 保留并强化的内容：
+
+- 被多类型公司（而非仅大厂）共同强调的维度 → 确认为核心特质
+- 结构清晰、三层分层合理的部分 → 保持框架稳定
+- 贴合人才级别的期望水位 → 确保不偏高/偏低
+- Phase 0L 画像与市场信号一致的信号 → 交叉确认
+
+### 「弃」— 修正或降级的内容：
+
+- 仅互联网大厂强调、其他类型企业不提的表述 → 降级为证据层或标注"大厂场景"
+- 与目标行业企业差异较大的表述 → 修正措辞或边界
+- 仅个别公司提到的要求 → 降级为证据层
+- 混淆证据层与特质层的内容 → 重新归位
+- 层级错配的期望 → 调整水位
+- Phase 0L 画像中的单一来源信号（未在调研中交叉验证） → 降级为参考注记
+
+### 调整优先级
+
+```
+wording → evidence → boundary → core dimensions
+```
+
+即：先检查措辞准确性，再确认证据层归属，然后调整边界范围，最后才触及核心维度。
+
+---
+
 ## Phase 4: 质量验证
 
 ### 4.1 已知测试（Sanity Check）
@@ -764,20 +889,44 @@ Agent 2 的输入包括 Phase 0L 的 `lacanian/intake.md`，其 prompt 调整为
 
 ### 4.4 自检清单
 
-| 检查项 | 通过标准 |
-|--------|---------|
-| 维度命名合规 | 6个维度名称不含黑名单关键词 |
-| 维度数量 | 6个，与信号归纳表对应 |
-| 行为数量 | D1-D6各至少2个行为项 |
-| 证据完整性 | 每个行为至少1个证据 |
-| 降级说明节 | 存在且非空 |
-| 校招/实习场景 | 验证链接全来自campus/graduate/intern |
-| 旭日图约束 | 只显示D1维度名（二级折叠），无三级展开 |
-| 能力树完整 | D1-D2-D3全部展开 |
-| 图表类型 | 无radar/bar/line/pie |
-| 无量化数值 | 无精确数字value/min/max |
-| 配色一致性 | D1-D6颜色全图表统一 |
-| 拉康画像整合 | Phase 0L产出已注入信号归纳表 |
+**⚠️ 以下检查项必须在 HTML 文件写入前完成，发现违规立即修正。**
+
+**内容完整性：**
+
+- [ ] **维度命名合规**：6个一级维度名称不含黑名单关键词（见维度起草中的黑名单）
+- [ ] **维度数量**：6个，与信号归纳表"→核心维度"行一一对应
+- [ ] **行为数量**：D1-D6各至少2个行为项
+- [ ] **证据完整性**：每个行为至少1个证据，证据以经历/产出描述，不直接等于工具名
+- [ ] **降级说明节**：存在且非空；若本次无降级，填写"本次建模未发现需要降级的技术词"（禁止留空）
+- [ ] **校招/实习场景**：验证链接全部来自campus/graduate/intern入口，无社招JD污染
+- [ ] **有验证结论节**：说明从多元企业信息中提炼出的跨类型稳定特质
+- [ ] **拉康画像整合**：Phase 0L 产出已注入信号归纳表（若有执行 Phase 0L）
+
+**图表规范性（硬约束，逐个检查）：**
+
+| # | 检查项 | 通过标准 | 搜索/验证方式 |
+|---|--------|---------|-------------|
+| 1 | 旭日图存在 | 文件中出现 sunburst 图表 | 搜索 `type: 'sunburst'` 或 `class="sunburst"` 或 `conic-gradient` |
+| 2 | 旭日图二级折叠 | 旭日图 data 中不存在第三层 children | 检查 D1 节点下的 D2 子节点无 D3 展开 |
+| 3 | 旭日图标签无堆叠 | D1 维度名每个不超过 8 个字符 | 超长必须缩写（如"方向与标尺"→"方向感"） |
+| 4 | 能力树完整展开 | D1-D2-D3 全部三级展开 | 每个行为节点下有三级证据节点 |
+| 5 | 矩形树图存在 | 文件中出现 treemap 图表 | 搜索 `type: 'treemap'` 或 `class="treemap"` |
+| 6 | 散点图存在 | 文件中出现 scatter 图表 | 搜索 `type: 'scatter'` |
+| 7 | 禁止图表类型 | 无 radar/bar/line/pie | 全文不出现 `type: 'radar'`、`'bar'`、`'line'`、`'pie'` |
+| 8 | 无量化数值 | 无精确数字 value/min/max | 搜索 `value:` 后跟数字（`value: 1` 除外）、`min:`、`max:`、`%` |
+| 9 | ECharts CDN 存在 | CDN 脚本标签在文件中 | 搜索 `cdn.jsdelivr.net/npm/echarts@5` |
+| 10 | 配色一致性 | D1-D6 颜色全图表统一 | 检查四图表中同一维度编号颜色一致，无 ECharts 默认色 |
+
+**全局配色标准：** D1=#7b8b78 D2=#a88244 D3=#89a89b D4=#8d6b61 D5=#64748b D6=#31526b
+能力树使用半透明版本 `rgba(hex, 0.14)` 背景 + `rgba(hex, 0.26)` 边框
+
+**格式规范：**
+
+- [ ] 无百分比/分数表达维度重要程度（只用相对"关注重心"描述）
+- [ ] 验证链接卡片有实际可点击URL + 入口类型标注 + 检验点说明
+- [ ] 报告可本地打开（ECharts通过CDN加载，首次需联网）
+
+**若发现违规项 → 立即修正后再输出，不要忽略任何一项。**
 
 ---
 
