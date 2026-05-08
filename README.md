@@ -138,6 +138,10 @@ cp -r TalentModel-skill <your-agent>/skills/talent-model
 | 功能 | 说明 |
 |------|------|
 | 🎯 **交互式配置向导** | 10步引导式配置，带智能提示和意图识别 |
+| 🧠 **拉康式临床画像 Phase 0L** | JD分析前的言语结构预判，捕捉候选人不自知的矛盾与欲望位置 |
+| 🤖 **6-Agent 并行采集 Phase 1** | 女娲式 Agent Swarm，6 个专项 Agent 并行研究后汇总 |
+| 🛑 **双强制 Checkpoint（Phase 1.5 / 2.5）** | 调研 Review 和提炼确认必须用户确认后才能推进 |
+| 🔄 **Phase 5 双Agent精炼** | 双 Agent 交叉审查，降低遗漏和过度抽象风险 |
 | 📐 **MECE 结构建模** | 6维胜任力框架，避免技能树陷阱 |
 | ✅ **官网验证** | 基于真实招聘页面交叉验证胜任力模型（URL 强制 WebFetch 验证） |
 | 📊 **4种可视化图表** | 旭日图、矩形树图、散点图、能力树 |
@@ -234,6 +238,23 @@ CHART_RENDER = cdn  # 推荐：CDN自动降级(jsdelivr→unpkg)，可选offline
 
 ## 更新日志
 
+### v2.0.0 (2026.04)
+
+> **架构重构专项 — 融合女娲造人术 + 拉康式临床画像 + Agent Team Orchestration**
+
+**方法论融合：**
+- 🧠 **Phase 0L 拉康式临床画像** — 在 JD 分析前引入非结构化临床访谈，通过候选人的言语方式（矛盾、缺口、象征秩序位置、欲望结构）预判胜任力信号，捕捉 JD 文本不可见的隐性能力
+- 🤖 **Phase 1 Agent Swarm（女娲式 6-Agent 并行）** — 著作研究、访谈分析、市场JD、外部评价、决策推断、时间线梳理 6 个专项 Agent 并行采集，由 Agent 2 整合 Phase 0L 画像结果
+- 🛑 **Phase 1.5 调研 Review Checkpoint** — Agent 汇总完成后，Agent 7 进行调研质量审查，强制用户确认后方可推进
+- 🔄 **Phase 2.5 提炼 Checkpoint** — 维度草案完成后进行提炼确认，确保与候选人画像方向一致
+- 🔍 **Phase 5 双Agent精炼** — 提炼 Agent + 批评 Agent 交叉审查，消除遗漏和过度抽象
+
+**工程规范：**
+- 📋 **AGENT.md** — Agent 开发规范，包含 commit trailer 规范（`Agent-Task`/`Agent-Model`）、feature branch 策略、PR template（含 Phase Checkpoint 清单）
+- 📂 **新增引用文件** — `lacanian-methodology.md`（拉康三大秩序 + 临床访谈技术 + 信号转化规则）、`extraction-framework.md`（三重验证 + 矛盾处理 + 降级词清单）
+
+**保留原版全部约束：** 维度层级/校招边界/技术词降级/图表类型/图表量化/自检清单/信号归纳表
+
 ### v1.3.1 (2026.04)
 
 > **兼容性修复专项**
@@ -296,18 +317,25 @@ CHART_RENDER = cdn  # 推荐：CDN自动降级(jsdelivr→unpkg)，可选offline
 ```
 TalentModel-skill/
 ├── SKILL.md                        # 技能入口点（Agent 必读）
+├── AGENT.md                        # Agent 开发规范（commit/分支/PR 模板）
 ├── README.md                       # 中文说明文档
+├── README_en.md                    # 英文说明文档
+├── .github/
+│   └── pull_request_template/
+│       └── agent.md                  # PR 模板（含 Phase Checkpoint 清单）
 ├── assets/                         # 静态资源
 │   ├── echarts.min.js               # ECharts 图表库（离线渲染）
 │   ├── config_template.txt          # 配置模板
+│   ├── agent-workflow.html          # Agent 推荐工作流（可导出 SVG/PNG）
 │   └── examples/                    # 示例文件
 │       ├── ai_infra_campus.txt      # 示例对话输出
-│       ├── sunburst-comparison*.html # 图表方案对比示例
-│       └── dev-roadmap.html          # 版本演进路线图 × Agent 工作流
+│       └── sunburst-comparison*.html # 图表方案对比示例
 └── references/                     # 参考文档（按需加载）
     ├── html_template.md              # HTML 报告模板（含 CSS/JS）
     ├── enterprise_reference.md        # 按类型分类的验证公司参考列表
-    └── test_cases.md                # 验证测试用例
+    ├── test_cases.md                # 验证测试用例
+    ├── lacanian-methodology.md       # 拉康式画像方法论（v2.0 新增）
+    └── extraction-framework.md        # 胜任力提炼方法论（v2.0 新增）
 ```
 
 ---
